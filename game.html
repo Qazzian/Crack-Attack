@@ -1,0 +1,57 @@
+<html>
+<head>
+
+<title>Crack Attack</title>
+
+<link type="text/css" rel="stylesheet" href="crackattack.css" />
+
+</head>
+<body>
+<!--<div style="height:50%; margin-top:200px;">
+</div> -->
+
+	<div class="ca_opposition_height_indicator">
+	</div>
+
+	<div class="ca_left_nav">
+		<div class="ca_logo"><h3>Crack Attack</h3></div>
+		<div class="ca_player_name"></div>
+		<div class="ca_death_bar"></div>
+		<div class="ca_player_score"></div>
+		<div class="ca_time"></div>
+
+	</div>
+
+	<div class="ca_board">
+		<div class="ca_block_container">
+			<div id="ca_control_block" class="block"></div>
+			<div id="ca_control_block2" class="block purple"></div>
+			<div class="block red" style="bottom:0px"></div>
+				<div class="block orange" style="bottom:41px"></div>
+					<div class="block yellow" style="bottom:82px"></div>
+						<div class="block green" style="bottom:123px"></div>
+		</div>
+	</div>
+
+	<div class="ca_player_height_indicator">
+	</div>
+
+
+	<div class="ca_debug">
+	<ul style="list-style:none;">
+		<li><input class="ca_init_button" type="button" onclick="ca.the_game.init" value="Init" /></li>
+		<li><input class="ca_tick_button" type="button" onclick="ca.the_game.tick" value="Tick" /></li>
+		<li><input class="ca_start_button" type="button" onclick="ca.the_game.start" value="Start" /></li>
+		<li><input class="ca_stop_button" type="button" onclick="ca.the_game.stop" value="Stop The Game!" /></li>
+		<li>FPS: <span id="ca_fps" /></li>
+		</ul>
+	</div>
+	<div style="clear:both"></div>
+
+
+<script type="text/JavaScript" src="ecma_extended.js"></script>
+<script type="text/JavaScript" src="/assets/js/jquery.js"></script>
+<script type="text/JavaScript" src="crackattack.js"></script>
+
+</body>
+</html>

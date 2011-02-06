@@ -1,0 +1,69 @@
+.block, .block.grey {
+	background-color: grey;
+	border: 1px solid black;
+	height: 3.4%;
+	margin: 1px;
+	position: absolute;
+	width: 15.8%;
+}
+.red { background-color:red;}
+.orange { background-color: orange;}
+.yellow { background-color:yellow;}
+.green { background-color:green;}
+.blue { background-color:blue;}
+.purple { background-color:purple;}
+#ca_control_block { /*visibility: hidden; */ bottom:574px;}
+#ca_control_block2 { /*visibility: hidden; */ bottom:120px; left: 42px;}
+
+.ca_board,
+.ca_player_height_indicator,
+.ca_opposition_height_indicator,
+.ca_left_nav {
+	margin-right:5px;
+}
+
+.ca_board {
+	background-color: pink;
+	color: white;
+	float: left;
+	height: 100%;
+	overflow : hidden;
+	position: relative;
+	width: 180px; /* should be height / 2 */
+}
+
+.ca_block_container {
+	background-color: black;
+	position: relative;
+	width: 100%;
+	height: 100%; /* Will be changed in the js to be at least 2xlarger than the board */
+	top: 0; /* Will also be changed in the js */
+	left: 0;
+}
+
+.ca_player_height_indicator,
+.ca_opposition_height_indicator {
+	float:left;
+	width: 3%;
+	height: 100%;
+	background-color: red;
+}
+
+.ca_left_nav {
+	float: left;
+}
+
+.ca_left_nav div{
+	background-color:pink;
+	height: 30px;
+	margin-bottom: 5px;
+}
+
+
+/************** Debug classes *********/
+.ca_debug {
+	float: left;
+	height: 100%;
+}
+
+
