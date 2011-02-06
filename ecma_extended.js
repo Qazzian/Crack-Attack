@@ -1,1 +1,1 @@
-../../../assets/js/ecma_extended.js
+../qazzian/assets/js/ecma_extended.js
