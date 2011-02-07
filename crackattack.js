@@ -220,7 +220,6 @@ ca.Board.prototype = {
 /* Manages the animations and states of the game blocks */
 ca.BlockManager.prototype = {
 	board: null,
-	$control_block: $('#ca_control_block'),
 	colour_probababilities: {grey: 2, orange:4, 	yellow:4, green:4, blue:4, purple:4},
 	total_colour_probablity: 0,
 	probability_to_colour: [],
@@ -265,8 +264,9 @@ ca.BlockManager.prototype = {
 	},
 
 	makeRandomBlock: function(){
-		var random_num = Math.randomInt(this.total_probablity);
+		var random_num = Math.randomInt(this.probability_to_colour.length);
 		var the_colour = this.probability_to_colour[random_num];
+
 		var the_block = new ca.Block();
 		the_block.init({colour : the_colour, block_manager: this, board: this.board});
 		return the_block;
