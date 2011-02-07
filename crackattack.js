@@ -173,7 +173,7 @@ ca.Board.prototype = {
 	},
 	/* Adds the block html to the end of the board DOM */
 	appendBlock : function($block)  {
-		this.boardtag.append($block);
+		this.container_tag.append($block);
 	},
 	/* Remove a given block's html from the board's DOM
 	 * Returns success flag. */
@@ -192,8 +192,6 @@ ca.Board.prototype = {
 		for (var i=0; i<this.columns; i++) {
 			var the_block = this.block_manager.makeRandomBlock();
 			this.blocks[i].unshift(the_block);
-			the_block.arr_x = i;
-			the_block.arr_y = this.blocks[i].length;
 		}
 	},
 	make_block : function(colour, special){
@@ -212,9 +210,7 @@ ca.Board.prototype = {
 		var curr_offset = this.bottom_offset;
 		for (var x=0; x<this.columns; x++) {
 			for (var y=0; y<this.blocks[x].length; y++) {
-				// TODO: not drawing the blocks
-				//console.log("Draw block ", x, ", ", y);
-				this.blocks[x][y].draw(curr_offset, x, y);
+				this.blocks[x][y].draw(x, y, curr_offset);
 			}
 		}
 	}
@@ -327,23 +323,27 @@ ca.Block.prototype = {
 	 * x - column number
 	 * y - row number
 	 */
-	draw: function(bottom_offset) {
+	draw: function(arr_x, arr_y, bottom_offset) {
+		this.arr_x = arr_x;
+		this.arr_y = arr_y;
+		this.bottom_offset = bottom_offset
 		// if not exists in the DOM call this.paint()
-		if (!this.$domobj) { this.paint(bottom_offset); }
+		if (!this.$domobj) { this.paint(); }
 		else {this.move()}
 		// else call this.move()
 	},
-	paint: function(bottom_offset) {
+	paint: function() {
 		console.log("Painting block: ", this.id, " At ", this.arr_x, ", ", this.arr_y);
 		var html = '<div id="block_'+this.id+'" class="block ' + this.colour + '"/>';
 		this.$domobj = $(html);
 		this.$domobj.data('ca_obj', this); // So we can get the ca object from the DOM tag
 		this.board.appendBlock(this.$domobj);
-		this.move(bottom_offset);
+		this.move();
 	},
-	move: function(bottom_offset) {
-		console.log("moving block: ", this.id, " At ", this.arr_x, ", ", this.arr_y);
-		var pos = this.block_manager.getBlockPos(this.arr_x, this.arr_y, bottom_offset);
+	move: function() {
+		// TODO move bottom_offset responsibility to Block manager
+		var pos = this.block_manager.getBlockPos(this.arr_x, this.arr_y, this.bottom_offset);
+		console.log("moving block: ", this.id, " At ", this.arr_x, ",", this.arr_y, " to: ", pos.left, ",",pos.bottom);
 		this.$domobj.css({left: pos.left + 'px', bottom: pos.bottom+'px', width:pos.width, height:pos.height});
 	},
 	remove: function(){
