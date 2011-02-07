@@ -143,20 +143,19 @@ ca.Board.prototype = {
 	},
 
 	resetAspectRatio : function() {
-		var self = this;
 		var height = this.boardtag.height();
 		var width = height / this.visible_rows * this.columns;
 		var block_width = width / this.columns;
 		var hidden_height = height / this.visible_rows * this.total_rows;
 		var block_height = hidden_height / this.total_rows;
-		var top_pos = (self.overground_rows) * block_height;
+		var top_pos = (this.overground_rows + this.underground_rows) * block_height;
 		this.boardtag.css({width: width+'px'});
 		this.container_tag.css({
 			width : width+'px',
 			height: hidden_height+'px',
 			top: -top_pos + 'px'
 		});
-		self.block_manager.setBlockDims(block_width, block_height);
+		this.block_manager.setBlockDims(block_width, block_height);
 		console.log("current_height: ", height, "new width: ", width);
 		console.log("Block height: ", block_height, ", top pos: ", top_pos);
 		console.log("hidden_height: ", hidden_height, " width: ", width);
@@ -220,7 +219,7 @@ ca.Board.prototype = {
 /* Manages the animations and states of the game blocks */
 ca.BlockManager.prototype = {
 	board: null,
-	colour_probababilities: {grey: 2, orange:4, 	yellow:4, green:4, blue:4, purple:4},
+	colour_probababilities: {grey: 1, orange:4, 	yellow:4, green:4, blue:4, purple:4},
 	total_colour_probablity: 0,
 	probability_to_colour: [],
 	block_width: 0,
@@ -236,6 +235,7 @@ ca.BlockManager.prototype = {
 				this.probability_to_colour.push(i);
 			}
 		}
+		this.probability_to_colour.unsort();
 	},
 
 
