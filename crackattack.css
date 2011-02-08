@@ -7,11 +7,11 @@
 	width: 15.8%;
 }
 .red { background-color:red;}
-.orange { background-color: orange;}
+.orange { background-color: #f80;}
 .yellow { background-color:yellow;}
-.green { background-color:green;}
+.green { background-color:#0a0;}
 .blue { background-color:blue;}
-.purple { background-color:purple;}
+.purple { background-color:#c0a;}
 #ca_control_block { /*visibility: hidden; */ bottom:574px;}
 #ca_control_block2 { /*visibility: hidden; */ bottom:120px; left: 42px;}
 
