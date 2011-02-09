@@ -73,7 +73,7 @@ ca.Game.prototype = {
 	},
 
 	tick : function(){
-		if (this.in_tick) {return;} // Stop the game running away with it's self.
+		if (this.in_tick || !window.gameloop) {return;} // Stop the game running away with it's self.
 		this.in_tick = true;
 		this.time = new Date();
 		this.dealWithEvent();
@@ -140,12 +140,13 @@ ca.BlockManager.prototype = {
 	/* Returns a hash of the block offset width and height (which includes border and margin) */
 	getBlockDims: function(){
 		if (!this.block_height || !this.block_width) { this.setBlockDims();}
-		return {width: this.block_width, height: this.block_height};
+		return {width: this.block_width, height: this.block_heightz};
 	},
 
 	setBlockDims: function(block_width, block_height){
 		this.block_height = block_height || this.$control_block[0].offsetHeight + 2;
 		this.block_width = block_width || this.$control_block[0].offsetWidth + 2;
+
 		this.has_resized = true;
 	},
 
@@ -241,7 +242,7 @@ ca.Block.prototype = {
 		// TODO move bottom_offset responsibility to Block manager
 		var pos = this.block_manager.getBlockPos(this.arr_x, this.arr_y, this.bottom_offset);
 		console.log("moving block: ", this.id, " At ", this.arr_x, ",", this.arr_y, " to: ", pos.left, ",",pos.bottom);
-		this.$domobj.css({left: pos.left + 'px', bottom: pos.bottom+'px', width:pos.width, height:pos.height});
+		this.$domobj.css({left: pos.left + 'px', bottom: pos.bottom+'px', width:pos.width-2, height:pos.height-2});
 	},
 	remove: function(){
 		this.$domobj.remove();
@@ -265,5 +266,7 @@ ca.Garbage.prototype = {
 
 }
 
+$(document).ready(function(){
+	ca.init();
+});
 
-ca.init();
