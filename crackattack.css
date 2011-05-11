@@ -15,6 +15,13 @@
 #ca_control_block { /*visibility: hidden; */ bottom:574px;}
 #ca_control_block2 { /*visibility: hidden; */ bottom:120px; left: 42px;}
 
+.col_0 { left: 0%;}
+.col_1 { left: 16.66%;}
+.col_2 { left: 33.33%;}
+.col_3 { left: 50%;}
+.col_4 { left: 66.66%;}
+.col_5 { left: 83.33%;}
+
 .ca_board,
 .ca_player_height_indicator,
 .ca_opposition_height_indicator,

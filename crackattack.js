@@ -67,7 +67,8 @@ ca.Game.prototype = {
 
 	start: function(){
 		if (window.gameloop) {return;}
-		var interval = 200;
+		var fps = 30;
+		var interval = 1000 / fps;
 		console.log("Game started with an interval of ", interval);
 		window.gameloop = setInterval(function (){ca.the_game.tick();}, interval);
 	},
@@ -231,8 +232,8 @@ ca.Block.prototype = {
 		// else call this.move()
 	},
 	paint: function() {
-		console.log("Painting block: ", this.id, " At ", this.arr_x, ", ", this.arr_y);
-		var html = '<div id="block_'+this.id+'" class="block ' + this.colour + '"/>';
+		//console.log("Painting block: ", this.id, " At ", this.arr_x, ", ", this.arr_y);
+		var html = '<div id="block_' + this.id + '" class="block ' + this.colour + ' col_' + this.arr_x + '"/>';
 		this.$domobj = $(html);
 		this.$domobj.data('ca_obj', this); // So we can get the ca object from the DOM tag
 		this.board.appendBlock(this.$domobj);
@@ -241,8 +242,8 @@ ca.Block.prototype = {
 	move: function() {
 		// TODO move bottom_offset responsibility to Block manager
 		var pos = this.block_manager.getBlockPos(this.arr_x, this.arr_y, this.bottom_offset);
-		console.log("moving block: ", this.id, " At ", this.arr_x, ",", this.arr_y, " to: ", pos.left, ",",pos.bottom);
-		this.$domobj.css({left: pos.left + 'px', bottom: pos.bottom+'px', width:pos.width-2, height:pos.height-2});
+		//console.log("moving block: ", this.id, " At ", this.arr_x, ",", this.arr_y, " to: ", pos.left, ",",pos.bottom);
+		this.$domobj.css({bottom: pos.bottom+'px'});
 	},
 	remove: function(){
 		this.$domobj.remove();
