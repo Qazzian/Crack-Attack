@@ -10,11 +10,11 @@
 Math.randomInt = function (low, high, interval){
 	var out = 0;
 	var num = Math.random();
-	if (low && !high)
+	if (low !== undefined && high === undefined)
 	{
 		out = Math.round(num * low);
 	}
-	else if (low && high && !interval)
+	else if (low !== undefined && high !== undefined && interval === undefined)
 	{
 		out = Math.round(num * (high - low)) + low;
 	}
@@ -26,6 +26,16 @@ Math.randomInt = function (low, high, interval){
 	}
 	//log("Math.randomInt: low: "+low+", high: "+high+", interval: "+interval+", out: "+out);
 	return out;
+}
+
+Array.prototype.shuffle = function(){
+	var copy = this.splice(0, this.length);
+	for (var i=copy.length; i > 0; i--) {
+		var pos = Math.randomInt(0, i-1);
+		this.push(copy.splice(pos, 1));
+	}
+	return this;
+
 }
 
 /**
@@ -103,3 +113,4 @@ if (window.jQuery)
 // 		}
 	})
 }
+
