@@ -10,7 +10,8 @@ window.ca = {
 	BlockManager : function(){},
 	Block : function(){},
 	next_block_id : 0,
-	Garbage : function(){}
+	Garbage : function(){},
+	Interface : function(){}
 };
 
 ca.Game.prototype = {
@@ -19,6 +20,7 @@ ca.Game.prototype = {
 	score : 0,
 	ticks : 0,
 	event_queue : [],
+	ui : null,
 	mainloop : null, // Holds the timeout reference
 	in_tick : false,
 
@@ -35,6 +37,8 @@ ca.Game.prototype = {
 		this.debug = {$fps : $('#ca_fps')};
 
 		this.init_events();
+		this.ui = new ca.Interface();
+		this.ui.init();
 		//this.start();
 	},
 
@@ -114,158 +118,6 @@ ca.Game.prototype = {
 };
 
 
-/* Manages the animations and states of the game blocks */
-ca.BlockManager.prototype = {
-	board: null,
-	colour_probababilities: {grey: 1, orange:4, 	yellow:4, green:4, blue:4, purple:4},
-	total_colour_probablity: 0,
-	probability_to_colour: [],
-	block_width: 0,
-	block_height: 0,
-	has_resized: false,
-
-	init: function(args){
-		this.board = args['board'];
-		// Calculate colour probabilities in advance
-		for (var i in this.colour_probababilities) {
-			this.total_probablity += this.colour_probababilities[i];
-			for (var j=0; j<this.colour_probababilities[i]; j++) {
-				this.probability_to_colour.push(i);
-			}
-		}
-		this.probability_to_colour.unsort();
-	},
-
-
-
-	/* Returns a hash of the block offset width and height (which includes border and margin) */
-	getBlockDims: function(){
-		if (!this.block_height || !this.block_width) { this.setBlockDims();}
-		return {width: this.block_width, height: this.block_heightz};
-	},
-
-	setBlockDims: function(block_width, block_height){
-		this.block_height = block_height || this.$control_block[0].offsetHeight + 2;
-		this.block_width = block_width || this.$control_block[0].offsetWidth + 2;
-
-		this.has_resized = true;
-	},
-
-	/* Returns the block bottom, left pixel values based on the given array co-ords (0-indexed) and bottom_offset */
-	getBlockPos: function(x, y, bottom_offset){
-		var pos = {
-			bottom : y * this.block_height + bottom_offset,
-			left : x * this.block_width,
-			width: this.block_width,
-			height: this.block_height
-		}
-		return pos;
-	},
-
-	makeRandomBlock: function(){
-		var random_num = Math.randomInt(this.probability_to_colour.length);
-		var the_colour = this.probability_to_colour[random_num];
-
-		var the_block = new ca.Block();
-		the_block.init({colour : the_colour, block_manager: this, board: this.board});
-		return the_block;
-	}
-}
-
-
-
-ca.Block.prototype = {
-	id : 0,
-	colour: '', /* can be 'grey', 'orange', '	yellow', 'green', 'blue', 'purple', 'black', 'white' */
-	special: false,
-	/* board array co-ords */
-	arr_x:0,
-	arr_y:0,
-	/* css style position */
-	dom_left:0,
-	dom_top:0,
-	$domobj: null,
-	board: null,
-	block_manager: null,
-	/**
-	 * States:
-	 *    new: just been created, Should not stay in this state long,
-	 *    turning: being converted from garbage,
-	 *    falling: what it says,
-	 *    rising: Hidden beneath the fold and not yet ready for play.
-	 *    active: ready to be used by the player,
-	 *    dying: disappearing. Still takes up space,
-	 *    dead: doesn't take up space and can be cleaned up
-	 */
-	state: 'new',
-
-	/**
-	 * Accepted parameters:
-	 * colour - A named colour (required)
-	 * special - boolean (default false)
-	 * col - column index
-	 * row - row index
-	 */
-	init: function(args){
-		if (typeof(args) === 'object') {
-			for (var key in args) {
-				if (this[key] !== undefined) {
-					this[key] = args[key];
-				}
-			}
-		}
-		this.id = ca.next_block_id++;
-		this.state = 'new';
-	},
-
-	/* bottom_offset - number of pixels to add to the bottom row
-	 * x - column number
-	 * y - row number
-	 */
-	draw: function(arr_x, arr_y, bottom_offset) {
-		this.arr_x = arr_x;
-		this.arr_y = arr_y;
-		this.bottom_offset = bottom_offset
-		// if not exists in the DOM call this.paint()
-		if (!this.$domobj) { this.paint(); }
-		else {this.move()}
-		// else call this.move()
-	},
-	paint: function() {
-		//console.log("Painting block: ", this.id, " At ", this.arr_x, ", ", this.arr_y);
-		var html = '<div id="block_' + this.id + '" class="block ' + this.colour + ' col_' + this.arr_x + '"/>';
-		this.$domobj = $(html);
-		this.$domobj.data('ca_obj', this); // So we can get the ca object from the DOM tag
-		this.board.appendBlock(this.$domobj);
-		this.move();
-	},
-	move: function() {
-		// TODO move bottom_offset responsibility to Block manager
-		var pos = this.block_manager.getBlockPos(this.arr_x, this.arr_y, this.bottom_offset);
-		//console.log("moving block: ", this.id, " At ", this.arr_x, ",", this.arr_y, " to: ", pos.left, ",",pos.bottom);
-		this.$domobj.css({bottom: pos.bottom+'px'});
-	},
-	remove: function(){
-		this.$domobj.remove();
-		this.board = null;
-		this.block_manager = null;
-	}
-};
-
-ca.Garbage.prototype = {
-	id : 0,
-	image : 0,
-	special : 0,
-	width : 0,
-	height : 0,
-	x : 0,
-	y : 0,
-
-	draw : function() {
-
-	}
-
-}
 
 $(document).ready(function(){
 	ca.init();

@@ -48,6 +48,16 @@
 	left: 0;
 }
 
+.ca_curser {
+	border: 2px dashed #cccc00;
+	background-color: transparent;
+	position: absolute;
+	top: 66.664%;
+	left: 66.66%;
+	width: 33.33%;
+	height: 8.333%;
+}
+
 .ca_player_height_indicator,
 .ca_opposition_height_indicator {
 	float:left;
