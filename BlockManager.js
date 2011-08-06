@@ -6,6 +6,8 @@ ca.BlockManager.prototype = {
 	probability_to_colour: [],
 	block_width: 0,
 	block_height: 0,
+	block_width_pct: 15.8,
+	block_height_pct: 3.4,
 	has_resized: false,
 
 	init: function(args){
@@ -53,6 +55,21 @@ ca.BlockManager.prototype = {
 		var the_block = new ca.Block();
 		the_block.init({colour : the_colour, block_manager: this, board: this.board});
 		return the_block;
+	},
+
+	/**
+	 * Called when the next row becomes playable
+	 */
+	rowUp: function(){
+
+	},
+
+	/**
+	 * Translate the given col, row position to left, top pixel values.
+	 * Takes into account the row offset etc
+	 */
+	coordsToPixels: function(col, row){
+
 	}
 };
 
@@ -111,7 +128,6 @@ ca.Block.prototype = {
 		// if not exists in the DOM call this.paint()
 		if (!this.$domobj) { this.paint(); }
 		else {this.move()}
-		// else call this.move()
 	},
 	paint: function() {
 		//console.log("Painting block: ", this.id, " At ", this.arr_x, ", ", this.arr_y);

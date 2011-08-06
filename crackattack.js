@@ -11,7 +11,7 @@ window.ca = {
 	Block : function(){},
 	next_block_id : 0,
 	Garbage : function(){},
-	Interface : function(){}
+	Cursor : function(){}
 };
 
 ca.Game.prototype = {
@@ -37,8 +37,8 @@ ca.Game.prototype = {
 		this.debug = {$fps : $('#ca_fps')};
 
 		this.init_events();
-		this.ui = new ca.Interface();
-		this.ui.init();
+		this.cursor = new ca.Cursor();
+		this.cursor.init();
 		//this.start();
 	},
 
