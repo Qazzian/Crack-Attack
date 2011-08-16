@@ -22,8 +22,6 @@ ca.BlockManager.prototype = {
 		this.probability_to_colour.shuffle();
 	},
 
-
-
 	/* Returns a hash of the block offset width and height (which includes border and margin) */
 	getBlockDims: function(){
 		if (!this.block_height || !this.block_width) { this.setBlockDims();}
@@ -61,14 +59,6 @@ ca.BlockManager.prototype = {
 	 * Called when the next row becomes playable
 	 */
 	rowUp: function(){
-
-	},
-
-	/**
-	 * Translate the given col, row position to left, top pixel values.
-	 * Takes into account the row offset etc
-	 */
-	coordsToPixels: function(col, row){
 
 	}
 };
@@ -127,21 +117,13 @@ ca.Block.prototype = {
 		this.bottom_offset = bottom_offset
 		// if not exists in the DOM call this.paint()
 		if (!this.$domobj) { this.paint(); }
-		else {this.move()}
 	},
 	paint: function() {
 		//console.log("Painting block: ", this.id, " At ", this.arr_x, ", ", this.arr_y);
-		var html = '<div id="block_' + this.id + '" class="block ' + this.colour + ' col_' + this.arr_x + '"/>';
+		var html = '<div id="block_' + this.id + '" class="block ' + this.colour + ' col_' + this.arr_x + ' row_'+this.arr_y+'">'+this.id+'</div>';
 		this.$domobj = $(html);
 		this.$domobj.data('ca_obj', this); // So we can get the ca object from the DOM tag
 		this.board.appendBlock(this.$domobj);
-		this.move();
-	},
-	move: function() {
-		// TODO move bottom_offset responsibility to Block manager
-		var pos = this.block_manager.getBlockPos(this.arr_x, this.arr_y, this.bottom_offset);
-		//console.log("moving block: ", this.id, " At ", this.arr_x, ",", this.arr_y, " to: ", pos.left, ",",pos.bottom);
-		this.$domobj.css({bottom: pos.bottom+'px'});
 	},
 	remove: function(){
 		this.$domobj.remove();

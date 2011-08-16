@@ -5,6 +5,9 @@
 	margin: 1px;
 	position: absolute;
 	width: 15.8%;
+	color: black;
+	font-weight: bold;
+	text-shadow: -1px -1px 4px white;
 }
 .red { background-color:red;}
 .orange { background-color: #f80;}
@@ -21,6 +24,38 @@
 .col_3 { left: 50%;}
 .col_4 { left: 66.66%;}
 .col_5 { left: 83.33%;}
+
+
+.row_0 { bottom: 0%; }
+.row_1 { bottom: 3.7%; }
+.row_2 { bottom: 7.4%; }
+.row_3 { bottom: 11.100000000000001%; }
+.row_4 { bottom: 14.8%; }
+.row_5 { bottom: 18.5%; }
+.row_6 { bottom: 22.200000000000003%; }
+.row_7 { bottom: 25.900000000000002%; }
+.row_8 { bottom: 29.6%; }
+.row_9 { bottom: 33.300000000000004%; }
+.row_10 { bottom: 37%; }
+.row_11 { bottom: 40.7%; }
+.row_12 { bottom: 44.400000000000006%; }
+.row_13 { bottom: 48.1%; }
+.row_14 { bottom: 51.800000000000004%; }
+.row_15 { bottom: 55.5%; }
+.row_16 { bottom: 59.2%; }
+.row_17 { bottom: 62.900000000000006%; }
+.row_18 { bottom: 66.60000000000001%; }
+.row_19 { bottom: 70.3%; }
+.row_20 { bottom: 74%; }
+.row_21 { bottom: 77.7%; }
+.row_22 { bottom: 81.4%; }
+.row_23 { bottom: 85.10000000000001%; }
+.row_24 { bottom: 88.80000000000001%; }
+.row_25 { bottom: 92.5%; }
+.row_26 { bottom: 96.2%; }
+.row_27 { bottom: 99.9%; }
+
+
 
 .ca_board,
 .ca_player_height_indicator,
@@ -48,15 +83,29 @@
 	left: 0;
 }
 
-.ca_curser {
+#ca_curser {
 	border: 2px dashed #cccc00;
 	background-color: transparent;
 	position: absolute;
-	top: 66.664%;
-	left: 66.66%;
+/*	top: 66.664%;*/
 	width: 33.33%;
-	height: 8.333%;
+	height: 3.4%;
 }
+
+/* Cursor positions */
+/*#ca_curser.row_0 { bottom: 0%; }
+#ca_curser.row_1 { bottom: 8.333%; }
+#ca_curser.row_2 { bottom: 16.667%; }
+#ca_curser.row_3 { bottom: 25%; }
+#ca_curser.row_4 { bottom: 33.333%; }
+#ca_curser.row_5 { bottom: 41.667%; }
+#ca_curser.row_6 { bottom: 50%; }
+#ca_curser.row_7 { bottom: 58.333%; }
+#ca_curser.row_8 { bottom: 66.667%; }
+#ca_curser.row_9 { bottom: 75%; }
+#ca_curser.row_10 { bottom: 83.333%; }
+#ca_curser.row_11 { bottom: 91.667%; }
+#ca_curser.row_12 { bottom: 100%; }*/
 
 .ca_player_height_indicator,
 .ca_opposition_height_indicator {

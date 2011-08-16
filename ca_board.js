@@ -25,7 +25,7 @@ ca.Board.prototype = {
 		}
 		this.setup_random_start();
 		var self = this;
-		setTimeout( function(){ self.draw(); }, 30 );
+		setTimeout( function(){self.draw();}, 30 );
 	},
 
 	resetAspectRatio : function() {
@@ -74,6 +74,13 @@ ca.Board.prototype = {
 	appendBlock : function($block)  {
 		this.container_tag.append($block);
 	},
+	getBlock: function(x, y) {
+		if (typeof x == 'object' && x.length == 2) {
+			y = x[1];
+			x = x[0];
+		}
+		return this.blocks[x][y];
+	},
 	/* Remove a given block's html from the board's DOM
 	 * Returns success flag. */
 	removeBlock : function(block_id){
@@ -111,6 +118,30 @@ ca.Board.prototype = {
 			for (var y=0; y<this.blocks[x].length; y++) {
 				this.blocks[x][y].draw(x, y, curr_offset);
 			}
+		}
+	},
+
+	switchBlocks: function(pos1, pos2) {
+		var b1 = this.getBlock(pos1);
+		var b2 = this.getBlock(pos2);
+
+		if (b2){
+			this.blocks[pos1[0]][pos1[1]] = b2;
+			b2.$domobj.removeClass('col_'+pos2[0]).addClass('col_'+pos1[0]);
+			b2.arr_x = pos1[0];
+			b2.arr_y = pos1[1];
+		}
+		else {
+			this.blocks[pos1[0]][pos1[1]] = null;
+		}
+		if (b1) {
+			this.blocks[pos2[0]][pos2[1]] = b1;
+			b1.$domobj.removeClass('col_'+pos1[0]).addClass('col_'+pos2[0]);
+			b1.arr_x = pos2[0];
+			b1.arr_y = pos2[1];
+		}
+		else {
+			this.blocks[pos2[0]][pos2[1]] = null;
 		}
 	}
 
