@@ -24,7 +24,7 @@ ca.BlockManager.prototype = {
 
 	/* Returns a hash of the block offset width and height (which includes border and margin) */
 	getBlockDims: function(){
-		if (!this.block_height || !this.block_width) { this.setBlockDims();}
+		if (!this.block_height || !this.block_width) {this.setBlockDims();}
 		return {width: this.block_width, height: this.block_heightz};
 	},
 
@@ -53,6 +53,37 @@ ca.BlockManager.prototype = {
 		var the_block = new ca.Block();
 		the_block.init({colour : the_colour, block_manager: this, board: this.board});
 		return the_block;
+	},
+
+	/* The block has just been moved.
+	 * See what state it is in now */
+	checkBlockState: function(block){
+		if (this.isBlockFalling(block)){
+			var toRow = 3;
+			block.drop(toRow);
+		}
+		/*isFalling? start Falling event.
+		 * isInAGroup? start destruction event with group.
+		 */
+	},
+
+	isBlockFalling: function(block){
+		/*get pos underneath
+		 *if empty return row index where the block should fall to
+		 *else if block underneath is falling
+		 *	return that blocks row target +1
+		 */
+	},
+
+	// recursive function
+	checkForGroups: function(startBlock){
+		var startPos = [startBlock.arr_x, startBlock.arr_y];
+		var group = [];
+		/* for each block around the start block
+		 *	if colors match add this to group 
+		 *	keep checking with the new block
+		 */
+		return group;
 	},
 
 	/**
@@ -116,7 +147,7 @@ ca.Block.prototype = {
 		this.arr_y = arr_y;
 		this.bottom_offset = bottom_offset
 		// if not exists in the DOM call this.paint()
-		if (!this.$domobj) { this.paint(); }
+		if (!this.$domobj) {this.paint();}
 	},
 	paint: function() {
 		//console.log("Painting block: ", this.id, " At ", this.arr_x, ", ", this.arr_y);
@@ -129,6 +160,13 @@ ca.Block.prototype = {
 		this.$domobj.remove();
 		this.board = null;
 		this.block_manager = null;
+	},
+	drop: function(toRow){
+		// do drop
+		// blockAbove.drop(toRow+1)
+		this.state = falling;
+		this.arr_y = toRow;
+
 	}
 };
 

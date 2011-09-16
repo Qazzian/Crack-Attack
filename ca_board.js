@@ -81,6 +81,11 @@ ca.Board.prototype = {
 		}
 		return this.blocks[x][y];
 	},
+
+	moveBlock: function(block) {
+		
+	},
+
 	/* Remove a given block's html from the board's DOM
 	 * Returns success flag. */
 	removeBlock : function(block_id){

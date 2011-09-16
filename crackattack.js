@@ -11,7 +11,11 @@ window.ca = {
 	Block : function(){},
 	next_block_id : 0,
 	Garbage : function(){},
-	Cursor : function(){}
+	Cursor : function(){},
+	BlockStates: {
+		NEW: 'new',
+		FALLING: 'falling'
+	}
 };
 
 ca.Game.prototype = {
