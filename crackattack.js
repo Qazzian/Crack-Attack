@@ -48,10 +48,10 @@ ca.Game.prototype = {
 
 	init_events : function(){
 		var thisgame = this;
-		$(window).bind('resize', function(){ thisgame.queueEvent('resize'); });
-		$('.ca_stop_button').bind('click', function(){ thisgame.event_queue.unshift('stop'); });
-		$('.ca_start_button').bind('click', function(){ thisgame.start(); });
-		$('.ca_init_button').bind('click', function(){ thisgame.init(); });
+		$(window).one('resize', function(){ thisgame.queueEvent('resize'); });
+		$('.ca_stop_button').one('click', function(){ thisgame.event_queue.unshift('stop'); });
+		$('.ca_start_button').one('click', function(){ thisgame.start(); });
+		$('.ca_init_button').one('click', function(){ thisgame.init(); });
 	},
 	// At some point this will need to save the event object.
 	queueEvent : function(event_name, event_obj) {

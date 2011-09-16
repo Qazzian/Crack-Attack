@@ -1,3 +1,12 @@
+TODO:
+
+Need to split first load functions from game init.
+	Clicking the init button causes new elements to be created but the old ones are not deleted.
+	Also a likely source of memory leaks with the number of circular references there are.
+	The GC won't remove top level objects if their children also have handles on them
+
+
+
 .block.row_0 { bottom: 0%; }
 .block.row_1 { bottom: 3.7%; }
 .block.row_2 { bottom: 7.4%; }
