@@ -105,15 +105,6 @@ ca.Board.prototype = {
 			this.blocks[i].unshift(the_block);
 		}
 	},
-	make_block : function(colour, special){
-		var the_block = new ca.Block();
-		the_block.colour = colour;
-	},
-	/** A block starts falling to the bottom */
-	block_fall : function(block_id) {
-	},
-	block_ready : function(block_id) {
-	},
 
 	add_garbage : function(){},
 	draw : function(){

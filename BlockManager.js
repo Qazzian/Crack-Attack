@@ -1,4 +1,4 @@
-/* Manages the animations and states of the game blocks */
+/* Manages creating, animation of and states of the game blocks */
 ca.BlockManager.prototype = {
 	board: null,
 	colour_probababilities: {grey: 1, orange:4, 	yellow:4, green:4, blue:4, purple:4},
@@ -9,6 +9,15 @@ ca.BlockManager.prototype = {
 	block_width_pct: 15.8,
 	block_height_pct: 3.4,
 	has_resized: false,
+	blockStates: {
+		fresh: [], // just been created, Should not stay in this state long,
+		turning: [], // being converted from garbage,
+		falling: [], // what it says,
+		rising: [], // Hidden beneath the fold and not yet ready for play.
+		active: [], // ready to be used by the player,
+		dying: [], // disappearing. Still takes up space,
+		dead: [] // doesn't take up space and needs to be cleaned up
+	},
 
 	init: function(args){
 		this.board = args['board'];
@@ -109,7 +118,7 @@ ca.Block.prototype = {
 	block_manager: null,
 	/**
 	 * States:
-	 *    new: just been created, Should not stay in this state long,
+	 *    fresh: just been created, Should not stay in this state long,
 	 *    turning: being converted from garbage,
 	 *    falling: what it says,
 	 *    rising: Hidden beneath the fold and not yet ready for play.
@@ -117,7 +126,7 @@ ca.Block.prototype = {
 	 *    dying: disappearing. Still takes up space,
 	 *    dead: doesn't take up space and can be cleaned up
 	 */
-	state: 'new',
+	state: 'fresh',
 
 	/**
 	 * Accepted parameters:

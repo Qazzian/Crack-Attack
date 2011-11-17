@@ -75,7 +75,7 @@ ca.Game.prototype = {
 
 	start: function(){
 		if (window.gameloop) {return;}
-		var fps = 30;
+		var fps = 32;
 		var interval = 1000 / fps;
 		console.log("Game started with an interval of ", interval);
 		window.gameloop = setInterval(function (){ca.the_game.tick();}, interval);
@@ -117,6 +117,10 @@ ca.Game.prototype = {
 		clearInterval(window.gameloop);
 		console.log("Game stopped");
 		window.gameloop = null;
+	},
+
+	cleanUp: function(){
+
 	}
 
 };
