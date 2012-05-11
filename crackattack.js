@@ -6,7 +6,6 @@ window.ca = {
 		ca.the_game.init();
 	},
 	Game : function(){},
-	Board : function(){},
 	BlockManager : function(){},
 	Block : function(){},
 	next_block_id : 0,
@@ -125,9 +124,4 @@ ca.Game.prototype = {
 
 };
 
-
-
-$(document).ready(function(){
-	ca.init();
-});
 

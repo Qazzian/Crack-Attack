@@ -116,17 +116,18 @@ ca.Block.prototype = {
 	$domobj: null,
 	board: null,
 	block_manager: null,
-	/**
-	 * States:
-	 *    fresh: just been created, Should not stay in this state long,
-	 *    turning: being converted from garbage,
-	 *    falling: what it says,
-	 *    rising: Hidden beneath the fold and not yet ready for play.
-	 *    active: ready to be used by the player,
-	 *    dying: disappearing. Still takes up space,
-	 *    dead: doesn't take up space and can be cleaned up
-	 */
-	state: 'fresh',
+	STATES: {
+		NULL: 0,		// Not part of the game yet.
+		FRESH: 1,		// just been created, Should not stay in this state long,
+		TURNING: 2,	// being converted from garbage,
+		FALLING: 3,	// in free fall
+		RISING: 4,		// Hidden beneath the fold and not yet ready for play.
+		ACTIVE: 5,		// ready to be used by the player,
+		DYING: 6,		// disappearing. Still takes up space,
+		DEAD: 7		// doesn't take up space and can be cleaned up
+	},
+	
+	state: null,
 
 	/**
 	 * Accepted parameters:
@@ -145,6 +146,10 @@ ca.Block.prototype = {
 		}
 		this.id = ca.next_block_id++;
 		this.state = 'new';
+	},
+
+	getCoords: function(){
+		return [this.arr_x, this.arr_y];
 	},
 
 	/* bottom_offset - number of pixels to add to the bottom row
@@ -193,3 +198,16 @@ ca.Garbage.prototype = {
 	}
 
 };
+
+// some helper functions for dealing with Positions and co-ordinates
+ca.Position = {
+	isPos: function(a) {
+		return a.length && a.length ==2;
+	},
+	add: function(a, b) {
+		return [a[0]+b[0], a[1]+b[1]];
+	},
+	subtract: function(a, b) {
+		return [a[0]-b[0], a[1]-b[1]];
+	}
+}

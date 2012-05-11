@@ -1,3 +1,15 @@
+
+ca.Board = function(opts){
+	// Quick hack to change some of the properties.
+	if (typeof opts === 'object') for (var o in opts) {
+		if (this.hasOwnProperty(o) && typeof this[o] !== 'function') {
+			this[o] = opts[o];
+		}
+	}
+	
+	this.total_rows = this.underground_rows + this.visible_rows + this.overground_rows;
+};
+
 ca.Board.prototype = {
 	boardtag : null,
 	container_tag : null,
@@ -17,15 +29,18 @@ ca.Board.prototype = {
 		this.container_tag = $('.ca_block_container');
 		this.block_manager = new ca.BlockManager();
 		this.block_manager.init({board:this});
-		this.total_rows = this.underground_rows + this.visible_rows + this.overground_rows;
 		this.resetAspectRatio();
+		this.initBlocks();
+		this.setup_random_start();
+		var self = this;
+		setTimeout( function(){self.draw();}, 30 );
+	},
+
+	initBlocks: function(){
 		this.blocks = [];
 		for (var x=0; x<this.columns; x++) {
 			this.blocks[x] = [];
 		}
-		this.setup_random_start();
-		var self = this;
-		setTimeout( function(){self.draw();}, 30 );
 	},
 
 	resetAspectRatio : function() {
@@ -50,15 +65,17 @@ ca.Board.prototype = {
 	setup_random_start : function(){
 		// Set up 3 hidden rows and one complete visible row
 		var start_full_rows = this.underground_rows + 1;
-		for (var x = 0; x < start_full_rows; x++) {
+		var x, y;
+		// Add empty rows.
+		for (x = 0; x < start_full_rows; x++) {
 			this.add_row();
 		}
 		// pick a random column. this will be empty from row 1 up.
-		var empty_row = Math.randomInt(this.columns -1);
+		var empty_col = Math.randomInt(this.columns -1);
 		var new_block_count = this.visible_rows / 2;
 		// for each of the other columns fill to row 6-8
-		for (var x=0; x<this.columns; x++) {
-			if (x == empty_row) {
+		for (x=0; x<this.columns; x++) {
+			if (x == empty_col) {
 				if (Math.random() > 0.80) { // Sometimes add an extra block to the empty row
 					this.blocks[x].push(this.block_manager.makeRandomBlock());
 				}
@@ -73,6 +90,10 @@ ca.Board.prototype = {
 	/* Adds the block html to the end of the board DOM */
 	appendBlock : function($block)  {
 		this.container_tag.append($block);
+	},
+	/* Checks that the position is in the visable range */
+	isPosVisible: function(x, y){
+		return x >= 0 && x < this.columns && y >= (this.underground_rows - 1) && y < (this.underground_rows+this.visible_rows-1);
 	},
 	getBlock: function(x, y) {
 		if (typeof x == 'object' && x.length == 2) {
@@ -107,6 +128,7 @@ ca.Board.prototype = {
 	},
 
 	add_garbage : function(){},
+	
 	draw : function(){
 		console.log("Drawing the board");
 		var curr_offset = this.bottom_offset;
@@ -139,7 +161,99 @@ ca.Board.prototype = {
 		else {
 			this.blocks[pos2[0]][pos2[1]] = null;
 		}
+	},
+
+	checkForGroups: function(){
+		var checked = {}; // " 'x,y' : (false | groupId | undefined) = checked not in a group | is in a group | not checked"
+		var groups = {};
+		var iter = this.getiter();
+
+		while(iter.hasNext()) {
+			var block = iter.next();
+
+
+		}
+		
+		/*
+		 * for each space (start at 0,3) and move right and up
+		 * if has block and block active
+		 *		Check to the right first
+				 *	if Same colour & active
+				 *		add to group
+				Check up as well
+					if up block works check left as well as right.
+
+			Store a hash of checked blocks
+		 */
+	},
+
+	checkInGroup: function(){
+
+	},
+
+	getIter: function(){
+		return new this.iter(this);
 	}
+
+
 
 }
 
+/* Iterates through all the visible positions.
+ * calling next() can return null as well as a block. */
+ca.Board.prototype.iter = function(board){
+	this.board = board;
+
+	// Start a -1 so that the first next() takes us to 0
+	this.x = -1;
+	this.y = board.underground_rows - 1;
+
+	this.length = board.columns * board.visible_rows;
+	this.index = -1;
+};
+
+ca.Board.prototype.iter.prototype = {
+	/* Returns the contents of the next board position or undefined. */
+	next: function() {
+		this.x = (this.x + 1) % this.board.columns;
+		if (this.x == 0) { this.y++; }
+		this.index ++;
+		if (this.index >= this.length) {
+			return undefined;
+		}
+
+		return this.board.getBlock(this.x, this.y);
+	},
+	
+	hasNext: function() {
+		return this.index < (this.length - 1);
+	}
+};
+
+ca.Board.prototype.iterRoundBlock = function(board, block) {
+	this.board = board;
+	this.targetPos = block.getCoords();
+	this.index = -1;
+};
+
+ca.Board.prototype.iterRoundBlock.prototype = {
+	positions: [[0,1], [1,0], [0,-1], [-1,0]],
+	length: 4,
+
+	next: function(){
+		this.index++;
+		var newPos = ca.Position.add(this.targetPos, this.positions[this.index]);
+
+		if (!this.board.isPosVisible(newPos)) {
+			return this.hasNext() ? this.next() : null;
+		}
+
+		var block = this.board.getBlock(newPos[0], newPos[1]);
+		return block.state == ca.Block.STATES.ACTIVE ? block : null;
+	},
+
+	hasNext: function(){
+		return this.index < this.positions.length;
+	}
+
+}
