@@ -161,14 +161,17 @@ ca.Block.prototype = {
 		this.arr_y = arr_y;
 		this.bottom_offset = bottom_offset
 		// if not exists in the DOM call this.paint()
-		if (!this.$domobj) {this.paint();}
+		if (!this.$domobj) {
+			return this.paint();
+		}
+		return null;
 	},
 	paint: function() {
 		//console.log("Painting block: ", this.id, " At ", this.arr_x, ", ", this.arr_y);
 		var html = '<div id="block_' + this.id + '" class="block ' + this.colour + ' col_' + this.arr_x + ' row_'+this.arr_y+'">'+this.id+'</div>';
 		this.$domobj = $(html);
 		this.$domobj.data('ca_obj', this); // So we can get the ca object from the DOM tag
-		this.board.appendBlock(this.$domobj);
+		return this.$domobj;
 	},
 	remove: function(){
 		this.$domobj.remove();

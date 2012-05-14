@@ -33,7 +33,9 @@ ca.Board.prototype = {
 		this.initBlocks();
 		this.setup_random_start();
 		var self = this;
-		setTimeout( function(){self.draw();}, 30 );
+		setTimeout( function(){
+			self.draw();
+		}, 30 );
 	},
 
 	initBlocks: function(){
@@ -134,7 +136,10 @@ ca.Board.prototype = {
 		var curr_offset = this.bottom_offset;
 		for (var x=0; x<this.columns; x++) {
 			for (var y=0; y<this.blocks[x].length; y++) {
-				this.blocks[x][y].draw(x, y, curr_offset);
+				var newElmt = this.blocks[x][y].draw(x, y, curr_offset);
+				if (newElmt) {
+					this.appendBlock(newElmt);
+				}
 			}
 		}
 	},
