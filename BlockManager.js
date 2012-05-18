@@ -1,13 +1,17 @@
-/* Manages creating, animation of and states of the game blocks */
+/* This is the logic of the board and the placment of the blocks */
 ca.BlockManager.prototype = {
-	board: null,
+	blocks : [],
+	
 	colour_probababilities: {grey: 1, orange:4, 	yellow:4, green:4, blue:4, purple:4},
 	total_colour_probablity: 0,
 	probability_to_colour: [],
-	block_width: 0,
-	block_height: 0,
-	block_width_pct: 15.8,
-	block_height_pct: 3.4,
+		
+	columns : 6, //blocks
+	visible_rows : 12, // only the visible blocks.
+	underground_rows : 3, // Number of rows to hide below the fold
+	overground_rows: 12, // Number of rows hidden above the fold
+	total_rows : null,
+	
 	has_resized: false,
 	blockStates: {
 		fresh: [], // just been created, Should not stay in this state long,
@@ -19,8 +23,8 @@ ca.BlockManager.prototype = {
 		dead: [] // doesn't take up space and needs to be cleaned up
 	},
 
-	init: function(args){
-		this.board = args['board'];
+	init: function(){
+		this.total_rows = this.underground_rows + this.visible_rows + this.overground_rows
 		// Calculate colour probabilities in advance
 		for (var i in this.colour_probababilities) {
 			this.total_probablity += this.colour_probababilities[i];
@@ -29,30 +33,78 @@ ca.BlockManager.prototype = {
 			}
 		}
 		this.probability_to_colour.shuffle();
+		this.initBlocks();
+		this.setup_random_start();
+		return true;
 	},
-
-	/* Returns a hash of the block offset width and height (which includes border and margin) */
-	getBlockDims: function(){
-		if (!this.block_height || !this.block_width) {this.setBlockDims();}
-		return {width: this.block_width, height: this.block_heightz};
-	},
-
-	setBlockDims: function(block_width, block_height){
-		this.block_height = block_height || this.$control_block[0].offsetHeight + 2;
-		this.block_width = block_width || this.$control_block[0].offsetWidth + 2;
-
-		this.has_resized = true;
-	},
-
-	/* Returns the block bottom, left pixel values based on the given array co-ords (0-indexed) and bottom_offset */
-	getBlockPos: function(x, y, bottom_offset){
-		var pos = {
-			bottom : y * this.block_height + bottom_offset,
-			left : x * this.block_width,
-			width: this.block_width,
-			height: this.block_height
+	
+	initBlocks: function(){
+		this.blocks = [];
+		for (var x=0; x<this.columns; x++) {
+			this.blocks[x] = [];
 		}
-		return pos;
+	},
+
+	setup_random_start : function(){
+		// Set up 3 hidden rows and one complete visible row
+		var start_full_rows = this.underground_rows + 1;
+		var x, y;
+		// Add empty rows.
+		for (x = 0; x < start_full_rows; x++) {
+			this.add_row();
+		}
+		// pick a random column. this will be empty from row 1 up.
+		var empty_col = Math.randomInt(this.columns -1);
+		var new_block_count = this.visible_rows / 2;
+		var tempBlock;
+		// for each of the other columns fill to row 6-8
+		for (x=0; x<this.columns; x++) {
+			if (x == empty_col) {
+				if (Math.random() > 0.80) { // Sometimes add an extra block to the empty col
+					tempBlock = this.makeRandomBlock();
+					tempBlock.setPos(x, this.blocks[x].length);
+					this.blocks[x].push(tempBlock);
+				}
+				continue;
+			}
+			var new_blocks = Math.randomInt(new_block_count -1, new_block_count +1);
+			for(y=0; y<new_blocks; y++) {
+					tempBlock = this.makeRandomBlock();
+					tempBlock.setPos(x, this.blocks[x].length);
+					this.blocks[x].push(tempBlock);
+			}
+		}
+	},
+	
+	
+	getBlock: function(x, y) {
+		if (typeof x == 'object' && x.length == 2) {
+			y = x[1];
+			x = x[0];
+		}
+		return this.blocks[x][y];
+	},
+
+	/* Remove a given block's html from the board's DOM
+	 * Returns success flag. */
+	removeBlock : function(block_id){
+		try {
+			this.boardtag.remove("div#"+block_id);
+		}
+		catch (e) {
+			return false;
+		}
+		return true;
+	},
+	
+	add_row : function() {
+		// Always adds to the bottom of the lists (unshift)
+		// generate 6 randomly coloured blocks and add them to the bottom of each column.
+		for (var i=0; i<this.columns; i++) {
+			var the_block = this.makeRandomBlock();
+			the_block.setPos(i, this.blocks[i].length);
+			this.blocks[i].unshift(the_block);
+		}
 	},
 
 	makeRandomBlock: function(){
@@ -100,8 +152,75 @@ ca.BlockManager.prototype = {
 	 */
 	rowUp: function(){
 
+	},
+
+	getIter: function(){
+		return new this.iter(this);
 	}
 };
+
+/* Iterates through all the visible positions.
+ * calling next() can return null as well as a block. */
+ca.BlockManager.prototype.iter = function(board){
+	if (typeof board === 'undefined' ) {
+		return new ca.BlockManager.prototype.iter(this);
+	}
+	
+	this.board = board;
+
+	// Start at -1 so that the first next() takes us to 0
+	this.x = -1;
+	this.y = board.underground_rows - 1;
+
+	this.length = board.columns * board.visible_rows;
+	this.index = -1;
+};
+
+ca.BlockManager.prototype.iter.prototype = {
+	/* Returns the contents of the next board position or undefined. */
+	next: function() {
+		this.x = (this.x + 1) % this.board.columns;
+		if (this.x == 0) { this.y++; }
+		this.index ++;
+		if (this.index >= this.length) {
+			return undefined;
+		}
+
+		return this.board.getBlock(this.x, this.y);
+	},
+	
+	hasNext: function() {
+		return this.index < (this.length - 1);
+	}
+};
+
+ca.BlockManager.prototype.iterRoundBlock = function(board, block) {
+	this.board = board;
+	this.targetPos = block.getCoords();
+	this.index = -1;
+};
+
+ca.BlockManager.prototype.iterRoundBlock.prototype = {
+	positions: [[0,1], [1,0], [0,-1], [-1,0]],
+	length: 4,
+
+	next: function(){
+		this.index++;
+		var newPos = ca.Position.add(this.targetPos, this.positions[this.index]);
+
+		if (!this.board.isPosVisible(newPos)) {
+			return this.hasNext() ? this.next() : null;
+		}
+
+		var block = this.board.getBlock(newPos[0], newPos[1]);
+		return block.state == ca.Block.STATES.ACTIVE ? block : null;
+	},
+
+	hasNext: function(){
+		return this.index < this.positions.length;
+	}
+
+}
 
 ca.Block.prototype = {
 	id : 0,
@@ -151,22 +270,17 @@ ca.Block.prototype = {
 	getCoords: function(){
 		return [this.arr_x, this.arr_y];
 	},
+	
+	setPos: function(x, y){
+		this.arr_x = x;
+		this.arr_y = y;
+	},
 
 	/* bottom_offset - number of pixels to add to the bottom row
 	 * x - column number
 	 * y - row number
 	 */
 	draw: function(arr_x, arr_y, bottom_offset) {
-		this.arr_x = arr_x;
-		this.arr_y = arr_y;
-		this.bottom_offset = bottom_offset
-		// if not exists in the DOM call this.paint()
-		if (!this.$domobj) {
-			return this.paint();
-		}
-		return null;
-	},
-	paint: function() {
 		//console.log("Painting block: ", this.id, " At ", this.arr_x, ", ", this.arr_y);
 		var html = '<div id="block_' + this.id + '" class="block ' + this.colour + ' col_' + this.arr_x + ' row_'+this.arr_y+'">'+this.id+'</div>';
 		this.$domobj = $(html);
@@ -214,3 +328,4 @@ ca.Position = {
 		return [a[0]-b[0], a[1]-b[1]];
 	}
 }
+
