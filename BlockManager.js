@@ -62,7 +62,6 @@ ca.BlockManager.prototype = {
 			if (x == empty_col) {
 				if (Math.random() > 0.80) { // Sometimes add an extra block to the empty col
 					tempBlock = this.makeRandomBlock();
-					tempBlock.setPos(x, this.blocks[x].length);
 					this.blocks[x].push(tempBlock);
 				}
 				continue;
@@ -70,7 +69,6 @@ ca.BlockManager.prototype = {
 			var new_blocks = Math.randomInt(new_block_count -1, new_block_count +1);
 			for(y=0; y<new_blocks; y++) {
 					tempBlock = this.makeRandomBlock();
-					tempBlock.setPos(x, this.blocks[x].length);
 					this.blocks[x].push(tempBlock);
 			}
 		}
@@ -102,7 +100,6 @@ ca.BlockManager.prototype = {
 		// generate 6 randomly coloured blocks and add them to the bottom of each column.
 		for (var i=0; i<this.columns; i++) {
 			var the_block = this.makeRandomBlock();
-			the_block.setPos(i, this.blocks[i].length);
 			this.blocks[i].unshift(the_block);
 		}
 	},
@@ -155,45 +152,62 @@ ca.BlockManager.prototype = {
 	},
 
 	getIter: function(){
-		return new this.iter(this);
+		return new this.iter();
 	}
 };
 
 /* Iterates through all the visible positions.
- * calling next() can return null as well as a block. */
-ca.BlockManager.prototype.iter = function(board){
+ * calling next() can return null as well as a block. 
+ * 
+ * @param board - The 2d array of block objects */
+ca.BlockManager.prototype.iter = function(board, length){
 	if (typeof board === 'undefined' ) {
-		return new ca.BlockManager.prototype.iter(this);
+		return new ca.BlockManager.prototype.iter(this.blocks, this.blocks.length * this.total_rows);
 	}
 	
 	this.board = board;
 
 	// Start at -1 so that the first next() takes us to 0
 	this.x = -1;
-	this.y = board.underground_rows - 1;
+	this.y = -1;
 
-	this.length = board.columns * board.visible_rows;
+	this.length = length;
 	this.index = -1;
 };
 
 ca.BlockManager.prototype.iter.prototype = {
-	/* Returns the contents of the next board position or undefined. */
+	
+	/* @return the contents of the next board position. 
+	 * Bare in mind that the location can be empty so this might return null. */
 	next: function() {
-		this.x = (this.x + 1) % this.board.columns;
+		this.x = (this.x + 1) % this.board.length;
 		if (this.x == 0) { this.y++; }
 		this.index ++;
 		if (this.index >= this.length) {
 			return undefined;
 		}
 
-		return this.board.getBlock(this.x, this.y);
+		return this.board[this.x][this.y];
 	},
 	
+	/* @return true if there are more blocks to return, false otherwise. */
 	hasNext: function() {
 		return this.index < (this.length - 1);
+	},
+	
+	/* @returns array [x, y] of the co-ordinates of the most recently returned block 
+	 *  or null if next() has not been called yet or called too many times. */
+	currentPos: function(){
+		if (this.index >= 0 && this.index < this.length) {
+			return [this.x, this.y]
+		}
+		return null
 	}
 };
 
+/* Iterates around the chosen block. 
+ * The length of this iterator can change depending on the block to iterate around. 
+ * e.g. if the target is on the edge. */
 ca.BlockManager.prototype.iterRoundBlock = function(board, block) {
 	this.board = board;
 	this.targetPos = block.getCoords();
@@ -225,16 +239,8 @@ ca.BlockManager.prototype.iterRoundBlock.prototype = {
 ca.Block.prototype = {
 	id : 0,
 	colour: '', /* can be 'grey', 'orange', '	yellow', 'green', 'blue', 'purple', 'black', 'white' */
-	special: false,
-	/* board array co-ords */
-	arr_x:0,
-	arr_y:0,
-	/* css style position */
-	dom_left:0,
-	dom_top:0,
+	special: false, /* for extream play */
 	$domobj: null,
-	board: null,
-	block_manager: null,
 	STATES: {
 		NULL: 0,		// Not part of the game yet.
 		FRESH: 1,		// just been created, Should not stay in this state long,
@@ -267,22 +273,13 @@ ca.Block.prototype = {
 		this.state = 'new';
 	},
 
-	getCoords: function(){
-		return [this.arr_x, this.arr_y];
-	},
-	
-	setPos: function(x, y){
-		this.arr_x = x;
-		this.arr_y = y;
-	},
-
 	/* bottom_offset - number of pixels to add to the bottom row
 	 * x - column number
 	 * y - row number
 	 */
-	draw: function(arr_x, arr_y, bottom_offset) {
+	draw: function(x, y) {
 		//console.log("Painting block: ", this.id, " At ", this.arr_x, ", ", this.arr_y);
-		var html = '<div id="block_' + this.id + '" class="block ' + this.colour + ' col_' + this.arr_x + ' row_'+this.arr_y+'">'+this.id+'</div>';
+		var html = '<div id="block_' + this.id + '" class="block ' + this.colour + ' col_' + x + ' row_'+y+'">'+this.id+'</div>';
 		this.$domobj = $(html);
 		this.$domobj.data('ca_obj', this); // So we can get the ca object from the DOM tag
 		return this.$domobj;

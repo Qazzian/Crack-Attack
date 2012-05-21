@@ -116,10 +116,11 @@ ca.Board.prototype = {
 		
 		while (blockIter.hasNext()) {
 			var block = blockIter.next();
+			var pos = blockIter.currentPos();
 			console.log("Drawing block: ", block);
 			if (typeof block === 'undefined') { continue; }
 			
-			var newElmt = block.draw(curr_offset);
+			var newElmt = block.draw(pos[0], pos[1]);
 			
 			if (newElmt) {
 				this.appendBlock(newElmt);
