@@ -152,7 +152,7 @@ ca.BlockManager.prototype = {
 	},
 
 	getIter: function(){
-		return new this.iter();
+		return this.iter();
 	}
 };
 

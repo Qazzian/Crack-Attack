@@ -23,10 +23,12 @@ TestBoard.prototype = {
 	
 
 	testIter: function() {
-		var board = new ca.BlockManager();
-		board.init();
+		var bm = new ca.BlockManager();
+		bm.init();
 
-		var iter = board.getIter();
+		var iter = bm.getIter();
+		console.log(iter);
+		ok(iter, "Block Manager can create an iter object")
 		ok(iter.length, 'Iter must report its length');
 		
 		var posCount = 0;
@@ -38,8 +40,8 @@ TestBoard.prototype = {
 		equal(posCount, iter.length, 'Calls to next must match length of iter');
 		
 		// Test that it works with blocks in the board
-		board.setup_random_start();
-		var iter2 = board.getIter();
+		bm.setup_random_start();
+		var iter2 = bm.getIter();
 		
 
 	}
