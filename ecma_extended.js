@@ -117,31 +117,33 @@ if (window.jQuery)
 /*
  * Useful Underscore extensions
  */
-if (! _) { _ = {} }
-/*
- * Useful for extending high chart options.
- * Do not use on objects with circular references, you will be here all day :)
- * Contraversial array implimentation: _.extendDeep(['a', 'b', 'c', 'd'], ['x', 'k']) == ['x', 'k', 'c', 'd']
- */
-_.extendDeep = function(obj){
-	_.each(Array.prototype.slice.call(arguments, 1), function(source) {
-		_.each(source, function(value, prop){
-			if ( ! source.hasOwnProperty(prop) ) { 
-				return 
-			}
-			else if ( _.isObject(source[prop]) ) {
-				obj[prop] = _.extendDeep( _.isObject(obj[prop]) ? obj[prop] : {}, source[prop]);
-			}
-			else if ( _.isArray(source[prop]) ) {
-				obj[prop] = _.extendDeep( _.isArray(obj[prop]) ? obj[prop] : [], source[prop]);
-			}
-			else if ( source[prop] !== void 0 ) {
-				obj[prop] = source[prop];
-			}
+if (typeof _ !== 'undefined') { 
+	/**
+	 * Useful for extending high chart options.
+	 * Do not use on objects with circular references, you will be here all day :)
+	 * Contraversial array implimentation: _.extendDeep(['a', 'b', 'c', 'd'], ['x', 'k']) == ['x', 'k', 'c', 'd']
+	 */
+	_.extendDeep = function(obj){
+		_.each(Array.prototype.slice.call(arguments, 1), function(source) {
+			_.each(source, function(value, prop){
+				if ( ! source.hasOwnProperty(prop) ) { 
+					return 
+				}
+				else if ( _.isObject(source[prop]) ) {
+					obj[prop] = _.extendDeep( _.isObject(obj[prop]) ? obj[prop] : {}, source[prop]);
+				}
+				else if ( _.isArray(source[prop]) ) {
+					obj[prop] = _.extendDeep( _.isArray(obj[prop]) ? obj[prop] : [], source[prop]);
+				}
+				else if ( source[prop] !== void 0 ) {
+					obj[prop] = source[prop];
+				}
+			});
 		});
-	});
-	return obj;
-};
+		return obj;
+	};
+}
+
 
 function testExtendDeep(){
 	return _.extendDeep(
