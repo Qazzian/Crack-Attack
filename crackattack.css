@@ -87,8 +87,7 @@
 	border: 2px dashed #cccc00;
 	background-color: transparent;
 	position: absolute;
-/*	top: 66.664%;*/
-	width: 33.33%;
+	width: 32%;
 	height: 3.4%;
 	z-index: 999;
 }

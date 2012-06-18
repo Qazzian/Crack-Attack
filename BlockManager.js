@@ -1,5 +1,5 @@
 /* This is the logic of the board and the placment of the blocks */
-ca.BlockManager.prototype = {
+ca.BlockManager = Backbone.Model.extend({
 	blocks : [],
 	
 	colour_probababilities: {grey: 1, orange:4, 	yellow:4, green:4, blue:4, purple:4},
@@ -35,6 +35,7 @@ ca.BlockManager.prototype = {
 		this.probability_to_colour.shuffle();
 		this.initBlocks();
 		this.setup_random_start();
+		ca.UIEventController.bind('switchBlocks', this.switchBlocks, this);
 		return true;
 	},
 	
@@ -76,25 +77,17 @@ ca.BlockManager.prototype = {
 	
 	
 	getBlock: function(x, y) {
-		if (typeof x == 'object' && x.length == 2) {
-			y = x[1];
-			x = x[0];
+		var pos;
+		
+		if (_.isArray(x) && x.length == 2) {
+			pos = x;
 		}
-		return this.blocks[x][y];
+		else {
+			pos = [x, y]
+		}
+		return this.blocks[pos[0]][pos[1]];
 	},
 
-	/* Remove a given block's html from the board's DOM
-	 * Returns success flag. */
-	removeBlock : function(block_id){
-		try {
-			this.boardtag.remove("div#"+block_id);
-		}
-		catch (e) {
-			return false;
-		}
-		return true;
-	},
-	
 	add_row : function() {
 		// Always adds to the bottom of the lists (unshift)
 		// generate 6 randomly coloured blocks and add them to the bottom of each column.
@@ -111,6 +104,38 @@ ca.BlockManager.prototype = {
 		var the_block = new ca.Block();
 		the_block.init({colour : the_colour, block_manager: this, board: this.board});
 		return the_block;
+	},
+
+	/**
+	 * Swaps the block positions.
+	 **/
+	switchBlocks: function(eventData) {
+		var blocks = this.blocks,
+		
+			pos1 = eventData[0],
+			pos2 = eventData[1],
+			
+			b1 = this.getBlock(eventData[0]),
+			b2 = this.getBlock(eventData[1]);
+
+		if (b2){
+			blocks[pos1[0]][pos1[1]] = b2;
+			b2.arr_x = pos1[0];
+			b2.arr_y = pos1[1];
+		}
+		else {
+			blocks[pos1[0]][pos1[1]] = null;
+		}
+		if (b1) {
+			blocks[pos2[0]][pos2[1]] = b1;
+			b1.arr_x = pos2[0];
+			b1.arr_y = pos2[1];
+		}
+		else {
+			blocks[pos2[0]][pos2[1]] = null;
+		}
+		
+		this.trigger('switchBlocks', [pos1, pos2]);
 	},
 
 	/* The block has just been moved.
@@ -154,7 +179,7 @@ ca.BlockManager.prototype = {
 	getIter: function(){
 		return this.iter();
 	}
-};
+});
 
 /* Iterates through all the visible positions.
  * calling next() can return null as well as a block. 
@@ -295,6 +320,26 @@ ca.Block.prototype = {
 		this.state = falling;
 		this.arr_y = toRow;
 
+	},
+	
+	// TODO Returns the col number that is currently stored in the className
+	getCssCol: function(){
+		var classNames = this.$domobj[0].className.split(' ');
+	},
+	
+	// Returns the row number that is currently stored in the className
+	getCssRow: function(){
+		
+	},
+	
+	// Sets the col number that is stored in the className
+	setCssCol: function(colNum){
+		
+	},
+	
+	// Sets the row number that is stored in the className
+	setCssRow: function(rowNum){
+		
 	}
 };
 
@@ -314,7 +359,9 @@ ca.Garbage.prototype = {
 };
 
 // some helper functions for dealing with Positions and co-ordinates
-ca.Position = {
+ca.Position = function(x, y) {
+}
+ca.Position.prototype = {
 	isPos: function(a) {
 		return a.length && a.length ==2;
 	},

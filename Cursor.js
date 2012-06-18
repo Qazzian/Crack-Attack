@@ -1,4 +1,4 @@
-ca.Cursor.prototype = {
+ca.Cursor = Backbone.Model.extend({
 	cursor_id: 'ca_curser',
 	cursor_location: null,
 	move_dirs : {
@@ -57,9 +57,12 @@ ca.Cursor.prototype = {
 				self.pauseGame();
 				break;
 			default:
-				// ignore unrecognised key presses.
+				// ignore unrecognised key presses. Also let them fire default event
+				return;
 				break;
 		}
+		event.preventDefault();
+		return false;
 	},
 
 	moveCursor: function(direction) {
@@ -87,11 +90,11 @@ ca.Cursor.prototype = {
 	},
 
 	switchBlocks: function(){
-		ca.the_game.board.switchBlocks(this.cursor_location, [this.cursor_location[0]+1, this.cursor_location[1]]);
+		ca.UIEventController.fire('switchBlocks', [this.cursor_location, [this.cursor_location[0]+1, this.cursor_location[1]]]);
 	},
 
 	pauseGame: function(){
 
 	}
 
-};
+});

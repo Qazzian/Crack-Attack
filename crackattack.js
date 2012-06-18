@@ -10,11 +10,22 @@ window.ca = {
 	Block : function(){},
 	next_block_id : 0,
 	Garbage : function(){},
-	Cursor : function(){},
+	Cursor : null,
 	BlockStates: {
 		NEW: 'new',
 		FALLING: 'falling'
+	},
+	
+	positions: {
+		rows: [
+			0, 3.7, 7.4, 11.1, 14.8, 18.5, 22.2, 25.9, 29.6, 33.3, 37, 40.7, 44.4, 48.1, 51.8, 
+			55.5, 59.2, 62.9, 66.6, 70.3, 74, 77.7, 81.4, 85.1, 88.8, 92.5, 96.2, 99.9
+		],
+		cols: [
+			0, 16.66, 33.33, 50, 66.66, 83.33
+		]
 	}
+
 };
 
 ca.Game.prototype = {
@@ -120,8 +131,7 @@ ca.Game.prototype = {
 
 	cleanUp: function(){
 
-	}
-
+	},
 };
 
 

@@ -1,32 +1,24 @@
-EventController = function(){
-	this.observers = {};
-}
-EventController.prototype = {
-	/* Hash of {eventnames: {observerNames: callbacks}} */
-	observers: null,
+/**
+ * A central place for UI events to be fired from.
+ * 
+ * Models and other views should bind event listeners to this object.
+ * UI views will then call the fire function which will trigger the appropriate event.
+ * 
+ * Events need to be listed in registeredEvents in order to trigger.
+ */
 
-	/* Replaces an exisitng bind form the same observerName */
-	bind: function(eventName, observerName, callback){
-		if (!this.observers[eventName]) {
-			this.observers[eventName] = {};
+ca.UIEventController = new (Backbone.Model.extend({
+	
+	registeredEvents: [
+		'switchBlocks'
+	],
+	
+	fire: function(eventName, data, element) {
+		if (this.registeredEvents.indexOf(eventName) > -1) {
+			this.trigger(eventName, data, element);
 		}
-		this.observers[eventName][observerName] = callback;
-	},
-
-	fire: function(eventName, data) {
-		if (this.observers[eventName]) {
-			for (var obv in this.observers[eventName]) {
-				if (this.observers[eventName].hasOwnProperty(obv)) {
-					this.observers[eventName][obv](data);
-				}
-			}
-		}
-	},
-
-	unbind: function(eventName, observerName) {
-		if (this.observers[eventName] && this.observers[eventName][observerName]) {
-			delete this.observers[eventName][observerName];
+		else {
+			console.log('Unknown event: ' + eventName);
 		}
 	}
-
-}
+}))();

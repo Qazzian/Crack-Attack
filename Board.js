@@ -5,18 +5,20 @@
  * It needs to deal with painting the blocks and animations.
  */
 
-ca.Board = function(opts){
+ca.Board = Backbone.View.extend({
 	// Quick hack to change some of the properties.
-	if (typeof opts === 'object') for (var o in opts) {
-		if (this.hasOwnProperty(o) && typeof this[o] !== 'function') {
-			this[o] = opts[o];
-		}
-	}
-	
-	this.total_rows = this.underground_rows + this.visible_rows + this.overground_rows;
-};
+//	if (typeof opts === 'object') for (var o in opts) {
+//		if (this.hasOwnProperty(o) && typeof this[o] !== 'function') {
+//			this[o] = opts[o];
+//		}
+//	}
+//	
+//	this.total_rows = this.underground_rows + this.visible_rows + this.overground_rows;
+//};
 
-ca.Board.prototype = {
+//ca.Board.prototype = {
+	tagName: 'div',
+	el: '.ca_board',
 	boardtag : null,
 	container_tag : null,
 	block_manager : null,
@@ -34,8 +36,8 @@ ca.Board.prototype = {
 	
 
 	init : function (){
-		this.boardtag = $('.ca_board');
-		this.container_tag = $('.ca_block_container');
+		this.boardtag = $(this.el);
+		this.container_tag = this.$('.ca_block_container');
 		this.block_manager = new ca.BlockManager();
 		this.block_manager.init();
 		this.resetAspectRatio();
@@ -43,14 +45,23 @@ ca.Board.prototype = {
 		setTimeout( function(){
 			self.draw();
 		}, 30 );
+		
+		_.bindAll(this, 'switchBlocks');
+		
+		this.block_manager.bind('switchBlocks', this.switchBlocks, this);
+		
 	},
 
 	resetAspectRatio : function() {
 		var height = this.boardtag.height();
 		var width = height / this.block_manager.visible_rows * this.block_manager.columns;
+		
 		var block_width = width / this.block_manager.columns;
+		
 		var hidden_height = height / this.block_manager.visible_rows * this.block_manager.total_rows;
 		var block_height = hidden_height / this.block_manager.total_rows;
+		this.setBlockDims(block_width, block_height);
+		
 		var top_pos = (this.block_manager.overground_rows) * block_height;
 		this.boardtag.css({width: width+'px'});
 		this.container_tag.css({
@@ -58,7 +69,8 @@ ca.Board.prototype = {
 			height: hidden_height+'px',
 			top: -top_pos + 'px'
 		});
-		this.setBlockDims(block_width, block_height);
+		
+		
 		console.log("current_height: ", height, "new width: ", width);
 		console.log("Block height: ", block_height, ", top pos: ", top_pos);
 		console.log("hidden_height: ", hidden_height, " width: ", width);
@@ -66,13 +78,12 @@ ca.Board.prototype = {
 
 	/* Returns a hash of the block offset width and height (which includes border and margin) */
 	getBlockDims: function(){
-		if (!this.block_height || !this.block_width) {this.setBlockDims();}
-		return {width: this.block_width, height: this.block_heightz};
+		return {width: this.block_width, height: this.block_height};
 	},
 
-	setBlockDims: function(block_width, block_height){
-		this.block_height = block_height;
-		this.block_width = block_width;
+	setBlockDims: function(w, h){
+		this.block_height = h;
+		this.block_width = w;
 
 		this.has_resized = true;
 	},
@@ -105,6 +116,18 @@ ca.Board.prototype = {
 	moveBlock: function(block) {
 		
 	},
+	
+	/* Remove a given block's html from the board's DOM
+	 * Returns success flag. */
+	removeBlock : function(block_id){
+		try {
+			this.boardtag.remove("div#"+block_id);
+		}
+		catch (e) {
+			return false;
+		}
+		return true;
+	},
 
 	add_garbage : function(){},
 	
@@ -129,27 +152,25 @@ ca.Board.prototype = {
 		}
 	},
 
-	switchBlocks: function(pos1, pos2) {
-		var b1 = this.getBlock(pos1);
-		var b2 = this.getBlock(pos2);
+	/**
+	 * Swaps the block positions.
+	 * Need to seperate the visual from the logical here.
+	 * TODO: The blocks have already switch position in the board so need to take that into account now
+	 **/
+	switchBlocks: function(eventData) {	
+		
+		var pos1 = eventData[0],
+			pos2 = eventData[1];	
+		
+		
+		var b1 = this.block_manager.getBlock(pos1);
+		var b2 = this.block_manager.getBlock(pos2);
 
-		if (b2){
-			this.blocks[pos1[0]][pos1[1]] = b2;
-			b2.$domobj.removeClass('col_'+pos2[0]).addClass('col_'+pos1[0]);
-			b2.arr_x = pos1[0];
-			b2.arr_y = pos1[1];
-		}
-		else {
-			this.blocks[pos1[0]][pos1[1]] = null;
-		}
 		if (b1) {
-			this.blocks[pos2[0]][pos2[1]] = b1;
-			b1.$domobj.removeClass('col_'+pos1[0]).addClass('col_'+pos2[0]);
-			b1.arr_x = pos2[0];
-			b1.arr_y = pos2[1];
+			b1.$domobj.removeClass(b1.$domobj.getClassLike(/col_.+/)).addClass('col_'+pos1[0]);
 		}
-		else {
-			this.blocks[pos2[0]][pos2[1]] = null;
+		if (b2){
+			b2.$domobj.removeClass(b2.$domobj.getClassLike(/col_.+/)).addClass('col_'+pos2[0]);
 		}
 	},
 
@@ -183,4 +204,4 @@ ca.Board.prototype = {
 
 
 
-}
+});
