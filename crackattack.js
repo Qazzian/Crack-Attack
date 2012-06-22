@@ -11,11 +11,14 @@ window.ca = {
 	next_block_id : 0,
 	Garbage : function(){},
 	Cursor : null,
-	BlockStates: {
-		NEW: 'new',
-		FALLING: 'falling'
-	},
+	Animations: null,
 	
+	/*** Constants   ***/
+
+	// Possible states the Blocks can be in
+	BLOCK_STATES: ['NULL', 'SWITCHING', 'FALLING', 'RISING', 'ACTIVE', 'DEAD'],
+	
+	// Positions are percentages relative to the size of .ca_block_container
 	positions: {
 		rows: [
 			0, 3.7, 7.4, 11.1, 14.8, 18.5, 22.2, 25.9, 29.6, 33.3, 37, 40.7, 44.4, 48.1, 51.8, 

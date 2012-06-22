@@ -157,7 +157,7 @@ ca.Board = Backbone.View.extend({
 	 * Need to seperate the visual from the logical here.
 	 * TODO: The blocks have already switch position in the board so need to take that into account now
 	 **/
-	switchBlocks: function(eventData) {	
+	switchBlocks: function(eventData) {
 		
 		var pos1 = eventData[0],
 			pos2 = eventData[1];	
@@ -167,10 +167,18 @@ ca.Board = Backbone.View.extend({
 		var b2 = this.block_manager.getBlock(pos2);
 
 		if (b1) {
-			b1.$domobj.removeClass(b1.$domobj.getClassLike(/col_.+/)).addClass('col_'+pos1[0]);
+			b1.$domobj.removeClass(b1.$domobj.getClassLike(/col_.+/));
+			ca.Animations.switchBlock(b1, pos2, pos1, function(){
+				b1.$domobj.addClass('col_'+pos1[0]);
+			});
 		}
 		if (b2){
-			b2.$domobj.removeClass(b2.$domobj.getClassLike(/col_.+/)).addClass('col_'+pos2[0]);
+			b2.$domobj.removeClass(b2.$domobj.getClassLike(/col_.+/))
+			ca.Animations.switchBlock(b2, pos1, pos2, function(){
+				b2.$domobj.addClass('col_'+pos1[0]);
+			});
+			
+			
 		}
 	},
 

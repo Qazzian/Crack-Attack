@@ -15,6 +15,7 @@
 .green { background-color:#0a0;}
 .blue { background-color:blue;}
 .purple { background-color:#c0a;}
+.blank { background-color: transparent; }
 #ca_control_block { /*visibility: hidden; */ bottom:574px;}
 #ca_control_block2 { /*visibility: hidden; */ bottom:120px; left: 42px;}
 
@@ -131,5 +132,6 @@
 	float: left;
 	height: 100%;
 }
+
 
 

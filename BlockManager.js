@@ -1,3 +1,7 @@
+// Possible states for the block.
+
+ca.BLOCK_STATES = ['NULL', 'SWITCHING', 'FALLING', 'RISING', 'ACTIVE', 'DEAD'];
+
 /* This is the logic of the board and the placment of the blocks */
 ca.BlockManager = Backbone.Model.extend({
 	blocks : [],
@@ -13,15 +17,6 @@ ca.BlockManager = Backbone.Model.extend({
 	total_rows : null,
 	
 	has_resized: false,
-	blockStates: {
-		fresh: [], // just been created, Should not stay in this state long,
-		turning: [], // being converted from garbage,
-		falling: [], // what it says,
-		rising: [], // Hidden beneath the fold and not yet ready for play.
-		active: [], // ready to be used by the player,
-		dying: [], // disappearing. Still takes up space,
-		dead: [] // doesn't take up space and needs to be cleaned up
-	},
 
 	init: function(){
 		this.total_rows = this.underground_rows + this.visible_rows + this.overground_rows
@@ -50,7 +45,7 @@ ca.BlockManager = Backbone.Model.extend({
 		// Set up 3 hidden rows and one complete visible row
 		var start_full_rows = this.underground_rows + 1;
 		var x, y;
-		// Add empty rows.
+		// Add full rows.
 		for (x = 0; x < start_full_rows; x++) {
 			this.add_row();
 		}
@@ -63,14 +58,20 @@ ca.BlockManager = Backbone.Model.extend({
 			if (x == empty_col) {
 				if (Math.random() > 0.80) { // Sometimes add an extra block to the empty col
 					tempBlock = this.makeRandomBlock();
+					tempBlock.setState('ACTIVE');
 					this.blocks[x].push(tempBlock);
 				}
-				continue;
 			}
-			var new_blocks = Math.randomInt(new_block_count -1, new_block_count +1);
-			for(y=0; y<new_blocks; y++) {
-					tempBlock = this.makeRandomBlock();
-					this.blocks[x].push(tempBlock);
+			else {
+				var new_blocks = Math.randomInt(new_block_count -1, new_block_count +1);
+				for(y=0; y<new_blocks; y++) {
+						tempBlock = this.makeRandomBlock();
+						this.blocks[x].push(tempBlock);
+				}
+			}
+			// Fill the rest of the column with placeholder blocks
+			while (this.blocks[x].length < this.total_rows) {
+				this.blocks[x].push(this.makePlaceHolder());
 			}
 		}
 	},
@@ -93,6 +94,7 @@ ca.BlockManager = Backbone.Model.extend({
 		// generate 6 randomly coloured blocks and add them to the bottom of each column.
 		for (var i=0; i<this.columns; i++) {
 			var the_block = this.makeRandomBlock();
+			the_block.setState('RISING');
 			this.blocks[i].unshift(the_block);
 		}
 	},
@@ -102,8 +104,14 @@ ca.BlockManager = Backbone.Model.extend({
 		var the_colour = this.probability_to_colour[random_num];
 
 		var the_block = new ca.Block();
-		the_block.init({colour : the_colour, block_manager: this, board: this.board});
+		the_block.init({colour : the_colour});
 		return the_block;
+	},
+	
+	// Placeholders needed while animations end etc.
+	makePlaceHolder: function(){
+		var the_block = new ca.Block();
+		the_block.init({colour : 'blank'});
 	},
 
 	/**
@@ -124,7 +132,7 @@ ca.BlockManager = Backbone.Model.extend({
 			b2.arr_y = pos1[1];
 		}
 		else {
-			blocks[pos1[0]][pos1[1]] = null;
+			blocks[pos1[0]][pos1[1]] = this.makePlaceHolder();
 		}
 		if (b1) {
 			blocks[pos2[0]][pos2[1]] = b1;
@@ -132,7 +140,7 @@ ca.BlockManager = Backbone.Model.extend({
 			b1.arr_y = pos2[1];
 		}
 		else {
-			blocks[pos2[0]][pos2[1]] = null;
+			blocks[pos2[0]][pos2[1]] = this.makePlaceHolder();
 		}
 		
 		this.trigger('switchBlocks', [pos1, pos2]);
@@ -147,14 +155,6 @@ ca.BlockManager = Backbone.Model.extend({
 		}
 		/*isFalling? start Falling event.
 		 * isInAGroup? start destruction event with group.
-		 */
-	},
-
-	isBlockFalling: function(block){
-		/*get pos underneath
-		 *if empty return row index where the block should fall to
-		 *else if block underneath is falling
-		 *	return that blocks row target +1
 		 */
 	},
 
@@ -178,6 +178,17 @@ ca.BlockManager = Backbone.Model.extend({
 
 	getIter: function(){
 		return this.iter();
+	},
+	
+	toString: function(){
+		var str = "";
+		_.each(this.blocks, function(i){
+			_.each(i, function(j){
+				str += (j ? j.id : '_') + ', ';
+			})
+			str += '\n';
+		})
+		return str;
 	}
 });
 
@@ -260,88 +271,6 @@ ca.BlockManager.prototype.iterRoundBlock.prototype = {
 	}
 
 }
-
-ca.Block.prototype = {
-	id : 0,
-	colour: '', /* can be 'grey', 'orange', '	yellow', 'green', 'blue', 'purple', 'black', 'white' */
-	special: false, /* for extream play */
-	$domobj: null,
-	STATES: {
-		NULL: 0,		// Not part of the game yet.
-		FRESH: 1,		// just been created, Should not stay in this state long,
-		TURNING: 2,	// being converted from garbage,
-		FALLING: 3,	// in free fall
-		RISING: 4,		// Hidden beneath the fold and not yet ready for play.
-		ACTIVE: 5,		// ready to be used by the player,
-		DYING: 6,		// disappearing. Still takes up space,
-		DEAD: 7		// doesn't take up space and can be cleaned up
-	},
-	
-	state: null,
-
-	/**
-	 * Accepted parameters:
-	 * colour - A named colour (required)
-	 * special - boolean (default false)
-	 * col - column index
-	 * row - row index
-	 */
-	init: function(args){
-		if (typeof(args) === 'object') {
-			for (var key in args) {
-				if (this[key] !== undefined) {
-					this[key] = args[key];
-				}
-			}
-		}
-		this.id = ca.next_block_id++;
-		this.state = 'new';
-	},
-
-	/* bottom_offset - number of pixels to add to the bottom row
-	 * x - column number
-	 * y - row number
-	 */
-	draw: function(x, y) {
-		//console.log("Painting block: ", this.id, " At ", this.arr_x, ", ", this.arr_y);
-		var html = '<div id="block_' + this.id + '" class="block ' + this.colour + ' col_' + x + ' row_'+y+'">'+this.id+'</div>';
-		this.$domobj = $(html);
-		this.$domobj.data('ca_obj', this); // So we can get the ca object from the DOM tag
-		return this.$domobj;
-	},
-	remove: function(){
-		this.$domobj.remove();
-		this.board = null;
-		this.block_manager = null;
-	},
-	drop: function(toRow){
-		// do drop
-		// blockAbove.drop(toRow+1)
-		this.state = falling;
-		this.arr_y = toRow;
-
-	},
-	
-	// TODO Returns the col number that is currently stored in the className
-	getCssCol: function(){
-		var classNames = this.$domobj[0].className.split(' ');
-	},
-	
-	// Returns the row number that is currently stored in the className
-	getCssRow: function(){
-		
-	},
-	
-	// Sets the col number that is stored in the className
-	setCssCol: function(colNum){
-		
-	},
-	
-	// Sets the row number that is stored in the className
-	setCssRow: function(rowNum){
-		
-	}
-};
 
 ca.Garbage.prototype = {
 	id : 0,
