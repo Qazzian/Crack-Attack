@@ -49,6 +49,7 @@ ca.Board = Backbone.View.extend({
 		_.bindAll(this, 'switchBlocks');
 		
 		this.block_manager.bind('switchBlocks', this.switchBlocks, this);
+		this.block_manager.bind('dropBlock', this.dropBlock, this);
 		
 	},
 
@@ -170,16 +171,43 @@ ca.Board = Backbone.View.extend({
 			b1.$domobj.removeClass(b1.$domobj.getClassLike(/col_.+/));
 			ca.Animations.switchBlock(b1, pos2, pos1, function(){
 				b1.$domobj.addClass('col_'+pos1[0]);
+				b1.$domobj.removeAttr('style');
 			});
 		}
 		if (b2){
 			b2.$domobj.removeClass(b2.$domobj.getClassLike(/col_.+/))
 			ca.Animations.switchBlock(b2, pos1, pos2, function(){
-				b2.$domobj.addClass('col_'+pos1[0]);
+				b2.$domobj.addClass('col_'+pos2[0]);
+				b2.$domobj.removeAttr('style');
 			});
 			
 			
 		}
+	},
+	
+	/**
+	 * Animate a block falling
+	 * @param data {Object} event data
+	 * @attribute start {Array[2]} Start positon of the fall
+	 * @attribute end {Array[2]} The final resting point of the block
+	 * @attribute block {ca.Block} The block Object that is being animated
+	 **/
+	dropBlock: function(data){
+		
+		/* TODO
+		 * Start animating the block's DOM element
+		 * rescan the column and re-render the rest of the blocks correctly
+		 * */
+		console.log("Start Drop block animation", data);
+		var block = data.block;
+		ca.Animations.dropBlock(block, data.start, data.end, function(){
+			console.log("End drop Animation", data);
+			block.$domobj.removeClass(block.$domobj.getClassLike(/row_/));
+			block.$domobj.addClass('row_'+data.end[1]);
+		});
+		
+		
+		
 	},
 
 	checkForGroups: function(){

@@ -10,7 +10,7 @@
 ca.UIEventController = new (Backbone.Model.extend({
 	
 	registeredEvents: [
-		'switchBlocks'
+		'switchBlocks'  // Data: { leftPos: Array[2], rightPos: Array[2] }
 	],
 	
 	fire: function(eventName, data, element) {

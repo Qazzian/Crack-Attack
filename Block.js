@@ -1,5 +1,3 @@
-
-
 ca.Block = Backbone.Model.extend({
 	id : 0,
 	colour: '', /* can be 'grey', 'orange', '	yellow', 'green', 'blue', 'purple', 'black', 'white' */
@@ -57,7 +55,7 @@ ca.Block = Backbone.Model.extend({
 		return (!this.isAnimating && this.state === 'ACTIVE');
 	},
 	// Return true if this is a placeholder block
-	isEmpty: function(){
+	isBlank: function(){
 		return this.colour === 'blank';
 	}
 });

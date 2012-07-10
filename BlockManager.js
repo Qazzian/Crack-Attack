@@ -31,6 +31,8 @@ ca.BlockManager = Backbone.Model.extend({
 		this.initBlocks();
 		this.setup_random_start();
 		ca.UIEventController.bind('switchBlocks', this.switchBlocks, this);
+		this.bind('animationEnd', this.checkBlockState, this);
+		
 		return true;
 	},
 	
@@ -112,6 +114,7 @@ ca.BlockManager = Backbone.Model.extend({
 	makePlaceHolder: function(){
 		var the_block = new ca.Block();
 		the_block.init({colour : 'blank'});
+		return the_block;
 	},
 
 	/**
@@ -145,17 +148,73 @@ ca.BlockManager = Backbone.Model.extend({
 		
 		this.trigger('switchBlocks', [pos1, pos2]);
 	},
+	
+	/**
+	 * Cause the block at the given position to fall as far as it can.
+	 * Alternativly, fall to the given end Position if you already know what it is
+	 * @param {Array[2]} pos The Position of the block to start falling
+	 * @param {Array[2]} endPos @optional The position the block should fall to (not implimented).
+	 * @return {booliean} A flag to indicate if the animation started {true} or not {false}.
+	 */
+	dropBlock: function(pos){
+		var block = this.getBlock(pos),
+			col = this.blocks[pos[0]],
+			currRow = pos[1], 
+			currBlock, endRow, endPos;
+		
+		// Find the first none blank block
+		try {
+			do {
+				currRow--;
+				currBlock = this.getBlock([pos[0], currRow]);
+				console.log("Check Block:", pos[0], currRow, currBlock);
+			} while (currBlock.isBlank())
+		}
+		catch (e) {
+			console.log("DropBlock Error", e, pos, currRow, currBlock);
+			return false;
+		}
+			
+		endRow = currRow + 1;
+		
+		if (endRow === pos[1]) {
+			return false;
+		}
+		
+		// TODO move the block to the new position
+		col.splice(pos[1], 1);
+		col.splice(endRow, 0, block);
+		
+		// TODO trigger the animation
+		endPos = [pos[0], endRow];
+		this.trigger('dropBlock', {start: pos, end: endPos, block: block});
+			
+		
+	},
 
 	/* The block has just been moved.
-	 * See what state it is in now */
-	checkBlockState: function(block){
-		if (this.isBlockFalling(block)){
-			var toRow = 3;
-			block.drop(toRow);
+	 * See what state it is in now and call the related functons/events
+	 * @param {Array[2]} endPos The final position of the block. */
+	checkBlockState: function(endPos){
+		var block = this.getBlock(endPos);
+		var inGroup;
+		
+		if (block.isBlank()) {
+			//blocks above?
 		}
-		/*isFalling? start Falling event.
-		 * isInAGroup? start destruction event with group.
-		 */
+		else {
+			//falling
+			var blockBelow = this.getBlock(endPos[0], endPos[1] -1);
+			console.log("Check block below: ", endPos, blockBelow);
+			if (blockBelow && blockBelow.isBlank()) {
+				this.dropBlock(endPos);
+			}
+			//makes a group
+			else if(inGroup) {
+				
+			}
+			
+		}
 	},
 
 	// recursive function
@@ -184,7 +243,7 @@ ca.BlockManager = Backbone.Model.extend({
 		var str = "";
 		_.each(this.blocks, function(i){
 			_.each(i, function(j){
-				str += (j ? j.id : '_') + ', ';
+				str += (j && !j.isBlank() ? j.id : '_') + ', ';
 			})
 			str += '\n';
 		})
