@@ -1,3 +1,5 @@
+/*global ca, Backbone */
+
 ca.Cursor = Backbone.Model.extend({
 	cursor_id: 'ca_curser',
 	cursor_location: null,
@@ -8,6 +10,7 @@ ca.Cursor = Backbone.Model.extend({
 			right: [1, 0],
 			none: [0,0]
 		},
+		
 	cursor_limits : {
 		min_x: 0,
 		max_x: 4,
@@ -59,14 +62,13 @@ ca.Cursor = Backbone.Model.extend({
 			default:
 				// ignore unrecognised key presses. Also let them fire default event
 				return;
-				break;
 		}
 		event.preventDefault();
 		return false;
 	},
 
 	moveCursor: function(direction) {
-		var moveCoords = this.move_dirs[direction]
+		var moveCoords = this.move_dirs[direction];
 
 		// TODO: contain the cursor
 		this.cursor_location[0] += moveCoords[0];

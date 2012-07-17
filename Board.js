@@ -5,6 +5,8 @@
  * It needs to deal with painting the blocks and animations.
  */
 
+/*global Backbone: false, ca: false, _: false */
+
 ca.Board = Backbone.View.extend({
 	// Quick hack to change some of the properties.
 //	if (typeof opts === 'object') for (var o in opts) {
@@ -96,7 +98,7 @@ ca.Board = Backbone.View.extend({
 			left : x * this.block_width,
 			width: this.block_width,
 			height: this.block_height
-		}
+		};
 		return pos;
 	},
 	/* Checks that the position is in the visable range */
@@ -141,13 +143,15 @@ ca.Board = Backbone.View.extend({
 		while (blockIter.hasNext()) {
 			var block = blockIter.next();
 			var pos = blockIter.currentPos();
+
 			console.log("Drawing block: ", block);
-			if (typeof block === 'undefined') { continue; }
-			
-			var newElmt = block.draw(pos[0], pos[1]);
-			
-			if (newElmt) {
-				this.appendBlock(newElmt);
+
+			if (typeof block !== 'undefined') { 
+				var newElmt = block.draw(pos[0], pos[1]);
+
+				if (newElmt) {
+					this.appendBlock(newElmt);
+				}
 			}
 			
 		}
@@ -168,14 +172,14 @@ ca.Board = Backbone.View.extend({
 		var b2 = this.block_manager.getBlock(pos2);
 
 		if (b1) {
-			b1.$domobj.removeClass(b1.$domobj.getClassLike(/col_.+/));
+			b1.$domobj.removeClass(b1.$domobj.getClassLike(/col_/));
 			ca.Animations.switchBlock(b1, pos2, pos1, function(){
 				b1.$domobj.addClass('col_'+pos1[0]);
 				b1.$domobj.removeAttr('style');
 			});
 		}
 		if (b2){
-			b2.$domobj.removeClass(b2.$domobj.getClassLike(/col_.+/))
+			b2.$domobj.removeClass(b2.$domobj.getClassLike(/col_/));
 			ca.Animations.switchBlock(b2, pos1, pos2, function(){
 				b2.$domobj.addClass('col_'+pos2[0]);
 				b2.$domobj.removeAttr('style');
