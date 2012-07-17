@@ -203,10 +203,21 @@ ca.BlockManager = Backbone.Model.extend({
 	 * @param {Array[2]} endPos The final position of the block. */
 	checkBlockState: function(endPos){
 		var block = this.getBlock(endPos);
-		var inGroup;
+		// Used if endPos block is blank
+		var i, blockAbove; 
+		// Used if endPos block is not blank
+		var blockBelow, inGroup; 
 		
 		if (block.isBlank()) {
 			//blocks above?
+			console.log("Block is blank, Check for blocks above");
+			i = 1; 
+			blockAbove = this.getBlock(endPos[0], endPos[1]+i);
+			while (blockAbove && !blockAbove.isBlank()) {
+				this.dropBlock([endPos[0], endPos[1]+i]);
+				i++;
+				blockAbove = this.getBlock(endPos[0], endPos[1]+i);
+			}
 		}
 		else {
 			//falling
