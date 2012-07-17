@@ -193,18 +193,29 @@ ca.Board = Backbone.View.extend({
 	 * @attribute block {ca.Block} The block Object that is being animated
 	 **/
 	dropBlock: function(data){
-		
-		/* TODO
-		 * Start animating the block's DOM element
-		 * rescan the column and re-render the rest of the blocks correctly
-		 * */
-		console.log("Start Drop block animation", data);
 		var block = data.block;
+		var i, blankBlock, rowClass, rowNum, newRow;
+		
+		//console.log("Start Drop block animation", data);
+		
 		ca.Animations.dropBlock(block, data.start, data.end, function(){
-			console.log("End drop Animation", data);
+			//console.log("End drop Animation", data);
 			block.$domobj.removeClass(block.$domobj.getClassLike(/row_/));
 			block.$domobj.addClass('row_'+data.end[1]);
+			//console.log("Adding class row_"+data.end[1]);
 		});
+		
+		for (i = data.start[1]; i >= data.end[1]; i--) {
+			blankBlock = this.block_manager.getBlock(data.start[0], i);
+			if (blankBlock.isBlank()) {
+				rowClass = blankBlock.$domobj.getClassLike(/row_/);
+				rowNum = parseInt(rowClass.replace('row_', ''), 10);
+				newRow = rowNum + 1;
+				//console.log('Move blank block', 'from', rowClass, rowNum, 'to:', newRow, blankBlock.$domobj[0].className);
+				blankBlock.$domobj.removeClass(rowClass);
+				blankBlock.$domobj.addClass('row_' + newRow);
+			}
+		}
 		
 		
 		
