@@ -1,12 +1,13 @@
-// Possible states for the block.
+/*global ca, Backbone, _ */
 
+// Possible states for the block.
 ca.BLOCK_STATES = ['NULL', 'SWITCHING', 'FALLING', 'RISING', 'ACTIVE', 'DEAD'];
 
 /* This is the logic of the board and the placment of the blocks */
 ca.BlockManager = Backbone.Model.extend({
 	blocks : [],
 	
-	colour_probababilities: {grey: 1, orange:4, 	yellow:4, green:4, blue:4, purple:4},
+	colour_probababilities: {grey: 1, orange:4, yellow:4, green:4, blue:4, purple:4},
 	total_colour_probablity: 0,
 	probability_to_colour: [],
 		
@@ -19,11 +20,14 @@ ca.BlockManager = Backbone.Model.extend({
 	has_resized: false,
 
 	init: function(){
-		this.total_rows = this.underground_rows + this.visible_rows + this.overground_rows
+		var i, j;
+		
+		this.total_rows = this.underground_rows + this.visible_rows + this.overground_rows;
+		
 		// Calculate colour probabilities in advance
-		for (var i in this.colour_probababilities) {
+		for (i in this.colour_probababilities) {
 			this.total_probablity += this.colour_probababilities[i];
-			for (var j=0; j<this.colour_probababilities[i]; j++) {
+			for (j=0; j<this.colour_probababilities[i]; j++) {
 				this.probability_to_colour.push(i);
 			}
 		}
@@ -37,8 +41,9 @@ ca.BlockManager = Backbone.Model.extend({
 	},
 	
 	initBlocks: function(){
+		var x;
 		this.blocks = [];
-		for (var x=0; x<this.columns; x++) {
+		for (x=0; x<this.columns; x++) {
 			this.blocks[x] = [];
 		}
 	},
@@ -86,16 +91,17 @@ ca.BlockManager = Backbone.Model.extend({
 			pos = x;
 		}
 		else {
-			pos = [x, y]
+			pos = [x, y];
 		}
 		return this.blocks[pos[0]][pos[1]];
 	},
 
 	add_row : function() {
+		var the_block, i;
 		// Always adds to the bottom of the lists (unshift)
 		// generate 6 randomly coloured blocks and add them to the bottom of each column.
-		for (var i=0; i<this.columns; i++) {
-			var the_block = this.makeRandomBlock();
+		for (i=0; i<this.columns; i++) {
+			the_block = this.makeRandomBlock();
 			the_block.setState('RISING');
 			this.blocks[i].unshift(the_block);
 		}
@@ -168,7 +174,7 @@ ca.BlockManager = Backbone.Model.extend({
 				currRow--;
 				currBlock = this.getBlock([pos[0], currRow]);
 				console.log("Check Block:", pos[0], currRow, currBlock);
-			} while (currBlock.isBlank())
+			} while (currBlock.isBlank());
 		}
 		catch (e) {
 			console.log("DropBlock Error", e, pos, currRow, currBlock);
@@ -204,7 +210,7 @@ ca.BlockManager = Backbone.Model.extend({
 		}
 		else {
 			//falling
-			var blockBelow = this.getBlock(endPos[0], endPos[1] -1);
+			blockBelow = this.getBlock(endPos[0], endPos[1] -1);
 			console.log("Check block below: ", endPos, blockBelow);
 			if (blockBelow && blockBelow.isBlank()) {
 				this.dropBlock(endPos);
@@ -244,9 +250,9 @@ ca.BlockManager = Backbone.Model.extend({
 		_.each(this.blocks, function(i){
 			_.each(i, function(j){
 				str += (j && !j.isBlank() ? j.id : '_') + ', ';
-			})
+			});
 			str += '\n';
-		})
+		});
 		return str;
 	}
 });
@@ -294,9 +300,9 @@ ca.BlockManager.prototype.iter.prototype = {
 	 *  or null if next() has not been called yet or called too many times. */
 	currentPos: function(){
 		if (this.index >= 0 && this.index < this.length) {
-			return [this.x, this.y]
+			return [this.x, this.y];
 		}
-		return null
+		return null;
 	}
 };
 
@@ -329,7 +335,7 @@ ca.BlockManager.prototype.iterRoundBlock.prototype = {
 		return this.index < this.positions.length;
 	}
 
-}
+};
 
 ca.Garbage.prototype = {
 	id : 0,
@@ -348,7 +354,8 @@ ca.Garbage.prototype = {
 
 // some helper functions for dealing with Positions and co-ordinates
 ca.Position = function(x, y) {
-}
+};
+
 ca.Position.prototype = {
 	isPos: function(a) {
 		return a.length && a.length ==2;
@@ -359,5 +366,5 @@ ca.Position.prototype = {
 	subtract: function(a, b) {
 		return [a[0]-b[0], a[1]-b[1]];
 	}
-}
+};
 
