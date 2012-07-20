@@ -7,8 +7,9 @@ ca.BLOCK_STATES = ['NULL', 'SWITCHING', 'FALLING', 'RISING', 'ACTIVE', 'DEAD'];
 ca.BlockManager = Backbone.Model.extend({
 	blocks : [],
 	
-	colour_probababilities: {grey: 1, orange:4, yellow:4, green:4, blue:4, purple:4},
+	colour_probabilities: {grey: 1, orange:5, yellow:5, green:5, blue:5, purple:5},
 	total_colour_probablity: 0,
+	total_probability: null,
 	probability_to_colour: [],
 		
 	columns : 6, //blocks
@@ -20,18 +21,25 @@ ca.BlockManager = Backbone.Model.extend({
 	has_resized: false,
 
 	init: function(){
-		var i, j;
+		var i, j, tArr = [];
 		
 		this.total_rows = this.underground_rows + this.visible_rows + this.overground_rows;
-		
+		console.log('probability_to_colour', _.isArray(this.probability_to_colour));
 		// Calculate colour probabilities in advance
-		for (i in this.colour_probababilities) {
-			this.total_probablity += this.colour_probababilities[i];
-			for (j=0; j<this.colour_probababilities[i]; j++) {
-				this.probability_to_colour.push(i);
+		for (i in this.colour_probabilities) { 
+			
+			if (this.colour_probabilities.hasOwnProperty(i)) {
+				this.total_probability += this.colour_probabilities[i];
+				console.log("calculating color " + i, typeof i, this.colour_probabilities[i], this.total_probability);
+				for (j=0; j<this.colour_probabilities[i]; j++) {
+					this.probability_to_colour.push(i);
+					tArr.push(i);
+				}
 			}
 		}
+		this.probability_to_colour = tArr;
 		this.probability_to_colour.shuffle();
+		console.log('probability_to_colour: ', this.probability_to_colour);
 		this.initBlocks();
 		this.setup_random_start();
 		ca.UIEventController.bind('switchBlocks', this.switchBlocks, this);
@@ -206,7 +214,7 @@ ca.BlockManager = Backbone.Model.extend({
 		// Used if endPos block is blank
 		var i, blockAbove; 
 		// Used if endPos block is not blank
-		var blockBelow, inGroup; 
+		var blockBelow, group; 
 		
 		if (block.isBlank()) {
 			//blocks above?
@@ -227,22 +235,67 @@ ca.BlockManager = Backbone.Model.extend({
 				this.dropBlock(endPos);
 			}
 			//makes a group
-			else if(inGroup) {
-				
+			else {
+				group = this.checkForGroups(endPos);
 			}
 			
 		}
 	},
 
-	// recursive function
-	checkForGroups: function(startBlock){
-		var startPos = [startBlock.arr_x, startBlock.arr_y];
+	/*
+	 * Check if the given position belongs to a group.
+	 */
+	checkForGroups: function(startPos){
 		var group = [];
-		/* for each block around the start block
-		 *	if colors match add this to group 
-		 *	keep checking with the new block
-		 */
+		this.groupInRow(startPos, group);
+		console.log('Current group: ', group);
+		this.groupInCol(startPos, group);
+		
 		return group;
+	},
+	
+	groupInRow: function(startPos, group) {
+		var startBlock = this.getBlock(startPos),
+			currCol = startPos[0],
+			currBlock, tmpGroup = [startBlock];
+		group = group || [];
+		
+		console.log('Check for Row group: ', startPos, startBlock);
+		
+		var diff = -1, carryOn = true;
+		
+		do {
+			currCol += diff;
+			try {
+				currBlock = this.getBlock(currCol, startPos[1]);
+				console.log("Check block ", currCol, startPos[1], currBlock);
+				if (currBlock && currBlock.match(startBlock)) {
+					tmpGroup.push(currBlock);
+					continue;
+				}
+			} catch (e) { 
+				// carry on
+			}
+			
+			if (diff < 0) {
+				diff = 1;
+				currCol = startPos[0];
+			}
+			else {
+				carryOn = false;
+			}
+		} while (carryOn);
+		
+		console.log('tmpGroup: ', tmpGroup);
+		
+		if (tmpGroup.length > 3) {
+			group.push(tmpGroup.splice(0, tmpGroup.length));
+		}
+		return group;
+	},
+	
+	groupInCol: function(startPos, group) {
+		
 	},
 
 	/**

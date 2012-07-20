@@ -50,6 +50,10 @@ ca.Block = Backbone.Model.extend({
 		}
 	},
 	
+	match: function(other){
+		return this.colour === other.colour;
+	},
+	
 	// Check the state of the block to see if the user can interact with it.
 	canUse: function(){
 		return (!this.isAnimating && this.state === 'ACTIVE');
