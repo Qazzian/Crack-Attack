@@ -63,6 +63,8 @@ ca.Animations = {
 	},
 	
 	dropBlock: function(block, startPos, endPos, callback){
+		console.log("Start drop animation: ", arguments);
+		
 		var css = {bottom: ca.positions.rows[endPos[1]] + '%'};
 		var $blockElmt = block.$domobj;
 		var duration = (ca.positions.rows[startPos[1]] - parseInt(css.bottom, 10)) * ca.Animations.fallSpeed;

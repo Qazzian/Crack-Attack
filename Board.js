@@ -15,7 +15,7 @@ ca.Board = Backbone.View.extend({
 //		}
 //	}
 //	
-//	this.total_rows = this.underground_rows + this.visible_rows + this.overground_rows;
+//	this.total_rows = this.undergroundRows + this.visible_rows + this.overgroundRows;
 //};
 
 //ca.Board.prototype = {
@@ -52,6 +52,7 @@ ca.Board = Backbone.View.extend({
 		
 		this.block_manager.bind('switchBlocks', this.switchBlocks, this);
 		this.block_manager.bind('dropBlock', this.dropBlock, this);
+		this.block_manager.bind('removeBlocks', this.removeBlocks, this);
 		
 	},
 
@@ -65,7 +66,7 @@ ca.Board = Backbone.View.extend({
 		var block_height = hidden_height / this.block_manager.total_rows;
 		this.setBlockDims(block_width, block_height);
 		
-		var top_pos = (this.block_manager.overground_rows) * block_height;
+		var top_pos = (this.block_manager.overgroundRows) * block_height;
 		this.boardtag.css({width: width+'px'});
 		this.container_tag.css({
 			width : width+'px',
@@ -103,7 +104,7 @@ ca.Board = Backbone.View.extend({
 	},
 	/* Checks that the position is in the visable range */
 	isPosVisible: function(x, y){
-		return x >= 0 && x < this.columns && y >= (this.underground_rows - 1) && y < (this.underground_rows+this.visible_rows-1);
+		return x >= 0 && x < this.columns && y >= (this.undergroundRows - 1) && y < (this.undergroundRows+this.visible_rows-1);
 	},
 	
 	/* Adds the block html to the end of the board DOM */
@@ -138,13 +139,13 @@ ca.Board = Backbone.View.extend({
 		console.log("Drawing the board");
 		var curr_offset = this.bottom_offset;
 		var blockIter = this.block_manager.iter();
-		console.log("Block Iter: ", blockIter);
+		//console.log("Block Iter: ", blockIter);
 		
 		while (blockIter.hasNext()) {
 			var block = blockIter.next();
 			var pos = blockIter.currentPos();
 
-			console.log("Drawing block: ", block);
+			//console.log("Drawing block: ", block);
 
 			if (typeof block !== 'undefined') { 
 				var newElmt = block.draw(pos[0], pos[1]);
@@ -224,35 +225,14 @@ ca.Board = Backbone.View.extend({
 		
 		
 	},
-
-	checkForGroups: function(){
-		var checked = {}; // " 'x,y' : (false | groupId | undefined) = checked not in a group | is in a group | not checked"
-		var groups = {};
-		var iter = this.getiter();
-
-		while(iter.hasNext()) {
-			var block = iter.next();
-
-
-		}
-		
-		/*
-		 * for each space (start at 0,3) and move right and up
-		 * if has block and block active
-		 *		Check to the right first
-				 *	if Same colour & active
-				 *		add to group
-				Check up as well
-					if up block works check left as well as right.
-
-			Store a hash of checked blocks
-		 */
-	},
-
-	checkInGroup: function(){
-
+	
+	removeBlocks: function(blockGroup){
+		_.each(blockGroup, function(){
+			// TODO  trigger the individual animation on the old block
+			// refresh with the new blank blocks
+			
+		});
 	}
-
 
 
 });

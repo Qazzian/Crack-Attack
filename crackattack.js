@@ -1,5 +1,6 @@
-/* create a crackattack namespace */
 
+
+/* create a crackattack namespace */
 window.ca = {
 	init : function () {
 		ca.the_game = new ca.Game();
@@ -134,7 +135,7 @@ ca.Game.prototype = {
 
 	cleanUp: function(){
 
-	},
+	}
 };
 
 

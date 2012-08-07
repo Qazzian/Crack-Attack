@@ -50,6 +50,18 @@ ca.Block = Backbone.Model.extend({
 		}
 	},
 	
+	/**
+	 * A way for the block to know about it's current position. 
+	 * NOTE: This is not currently maintained and is only valid for short times.
+	 * In other words set it then use it quickly, before the data becomes stale.
+	 * @param {Number} x The column index
+	 * @param {Number} y The row index
+	 * @return {Array[2]} The generated position object.
+	 */
+	setPos: function(x, y) {
+		return this.position = [].concat(x, y);  // This way I can be lazy and pass ([x, y], undefined) in some cases.
+	},
+	
 	match: function(other){
 		return this.colour === other.colour;
 	},

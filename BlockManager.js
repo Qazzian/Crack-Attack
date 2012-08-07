@@ -14,8 +14,8 @@ ca.BlockManager = Backbone.Model.extend({
 		
 	columns : 6, //blocks
 	visible_rows : 12, // only the visible blocks.
-	underground_rows : 3, // Number of rows to hide below the fold
-	overground_rows: 12, // Number of rows hidden above the fold
+	undergroundRows : 3, // Number of rows to hide below the fold
+	overgroundRows: 12, // Number of rows hidden above the fold
 	total_rows : null,
 	
 	has_resized: false,
@@ -23,7 +23,7 @@ ca.BlockManager = Backbone.Model.extend({
 	init: function(){
 		var i, j, tArr = [];
 		
-		this.total_rows = this.underground_rows + this.visible_rows + this.overground_rows;
+		this.total_rows = this.undergroundRows + this.visible_rows + this.overgroundRows;
 		console.log('probability_to_colour', _.isArray(this.probability_to_colour));
 		// Calculate colour probabilities in advance
 		for (i in this.colour_probabilities) { 
@@ -58,7 +58,7 @@ ca.BlockManager = Backbone.Model.extend({
 
 	setup_random_start : function(){
 		// Set up 3 hidden rows and one complete visible row
-		var start_full_rows = this.underground_rows + 1;
+		var start_full_rows = this.undergroundRows + 1;
 		var x, y;
 		// Add full rows.
 		for (x = 0; x < start_full_rows; x++) {
@@ -102,6 +102,24 @@ ca.BlockManager = Backbone.Model.extend({
 			pos = [x, y];
 		}
 		return this.blocks[pos[0]][pos[1]];
+	},
+	
+	/**
+	 * Return a block only if the position is in the visible area.
+	 * 
+	 * @param pos {Array[2]} - x, y co-ords
+	 */
+	getVisibleBlock: function(pos) {
+		if (!_.isArray(pos)) {
+			throw 'Error: getVisibleBlock requires a Position object';
+		}
+		if (pos[0] >= 0 && pos[0] <= this.columns 
+			&& pos[1] >= this.undergroundRows && pos[1] <= (this.undergroundRows + this.overgroundRows)
+			) 
+		{
+			return this.getBlock(pos);
+		}
+		return null;
 	},
 
 	add_row : function() {
@@ -214,7 +232,7 @@ ca.BlockManager = Backbone.Model.extend({
 		// Used if endPos block is blank
 		var i, blockAbove; 
 		// Used if endPos block is not blank
-		var blockBelow, group; 
+		var blockBelow, theGroup; 
 		
 		if (block.isBlank()) {
 			//blocks above?
@@ -236,7 +254,8 @@ ca.BlockManager = Backbone.Model.extend({
 			}
 			//makes a group
 			else {
-				group = this.checkForGroups(endPos);
+				theGroup = this.checkForGroups(endPos);
+				console.log('BlockState group: ', theGroup);
 			}
 			
 		}
@@ -246,35 +265,40 @@ ca.BlockManager = Backbone.Model.extend({
 	 * Check if the given position belongs to a group.
 	 */
 	checkForGroups: function(startPos){
-		var group = [];
-		this.groupInRow(startPos, group);
-		console.log('Current group: ', group);
-		this.groupInCol(startPos, group);
+		var rowGroup = this.groupInRow(startPos);
+		var colGroup = this.groupInCol(startPos);
+		console.log('Final group: ', rowGroup, colGroup);
 		
-		return group;
+		// Don't know why, but calling concat on an array reference instead of an object generated here does not work.
+		// e.g. rowGroup.concat(colGroup)
+		var joindGroup =  [].concat(rowGroup, colGroup);
+		console.log(joindGroup);
+		return joindGroup;
 	},
 	
-	groupInRow: function(startPos, group) {
-		var startBlock = this.getBlock(startPos),
+	groupInRow: function(startPos) {
+		var startBlock = this.getVisibleBlock(startPos),
 			currCol = startPos[0],
 			currBlock, tmpGroup = [startBlock];
-		group = group || [];
 		
-		console.log('Check for Row group: ', startPos, startBlock);
+		console.log('Check for Row group: ', startPos, startBlock.id);
 		
 		var diff = -1, carryOn = true;
 		
 		do {
 			currCol += diff;
 			try {
-				currBlock = this.getBlock(currCol, startPos[1]);
-				console.log("Check block ", currCol, startPos[1], currBlock);
+				console.log("Check block ", currCol, startPos[1]);
+				currBlock = this.getVisibleBlock([currCol, startPos[1]]);
+				
 				if (currBlock && currBlock.match(startBlock)) {
 					tmpGroup.push(currBlock);
+					currBlock.setPos(currCol, startPos[1]);
 					continue;
 				}
 			} catch (e) { 
 				// carry on
+				console.log('Block check error: ',e);
 			}
 			
 			if (diff < 0) {
@@ -288,14 +312,67 @@ ca.BlockManager = Backbone.Model.extend({
 		
 		console.log('tmpGroup: ', tmpGroup);
 		
-		if (tmpGroup.length > 3) {
-			group.push(tmpGroup.splice(0, tmpGroup.length));
+		if (tmpGroup.length >= 3) {
+			return tmpGroup;
 		}
-		return group;
+		return [];
 	},
 	
-	groupInCol: function(startPos, group) {
+	groupInCol: function(startPos) {
 		
+		var startBlock = this.getVisibleBlock(startPos),
+			currRow = startPos[1],
+			currBlock, tmpGroup = [startBlock];
+		
+		console.log('Check for Col group: ', startPos, startBlock.id);
+		
+		var diff = -1, carryOn = true;
+		
+		do {
+			currRow += diff;
+			try {
+				currBlock = this.getVisibleBlock([startPos[0], currRow]);
+				console.log("Check block ", startPos[0], currRow, currBlock.id);
+				if (currBlock && currBlock.match(startBlock)) {
+					tmpGroup.push(currBlock);
+					currBlock.setPos(startPos[0], currRow);
+					continue;
+				}
+			} catch (e) { 
+				// carry on
+				console.log('Block check error: ',e);
+			}
+			
+			if (diff < 0) {
+				diff = 1;
+				currRow = startPos[1];
+			}
+			else {
+				carryOn = false;
+			}
+		} while (carryOn);
+		
+		console.log('tmpGroup: ', tmpGroup);
+		
+		if (tmpGroup.length >= 3) {
+			return tmpGroup;
+		}
+		return [];
+	},
+	
+	/**
+	 * remove the given group of blocks
+	 */
+	removeblockGroup: function(theGroup) {
+		
+		_.each(theGroup, function(theBlock){
+			var pos = theBlock.pos;
+			this.blocks[pos[0]][pos[1]] = this.makePlaceHolder();
+			theBlock.state = 'deleteing';
+		});
+		
+		this.trigger('removeBlocks', theGroup);
+    
 	},
 
 	/**
