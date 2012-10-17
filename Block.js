@@ -59,7 +59,18 @@ ca.Block = Backbone.Model.extend({
 	 * @return {Array[2]} The generated position object.
 	 */
 	setPos: function(x, y) {
-		return this.position = [].concat(x, y);  // This way I can be lazy and pass ([x, y], undefined) in some cases.
+		if (_.isArray(x)) {
+			this.position = x;
+		}
+		else {
+			this.position = [x, y];
+		}
+		
+		return this.position;
+	},
+	
+	getPos: function(){
+		return this.position;
 	},
 	
 	match: function(other){

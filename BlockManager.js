@@ -24,13 +24,11 @@ ca.BlockManager = Backbone.Model.extend({
 		var i, j, tArr = [];
 		
 		this.total_rows = this.undergroundRows + this.visible_rows + this.overgroundRows;
-		console.log('probability_to_colour', _.isArray(this.probability_to_colour));
 		// Calculate colour probabilities in advance
 		for (i in this.colour_probabilities) { 
 			
 			if (this.colour_probabilities.hasOwnProperty(i)) {
 				this.total_probability += this.colour_probabilities[i];
-				console.log("calculating color " + i, typeof i, this.colour_probabilities[i], this.total_probability);
 				for (j=0; j<this.colour_probabilities[i]; j++) {
 					this.probability_to_colour.push(i);
 					tArr.push(i);
@@ -39,7 +37,6 @@ ca.BlockManager = Backbone.Model.extend({
 		}
 		this.probability_to_colour = tArr;
 		this.probability_to_colour.shuffle();
-		console.log('probability_to_colour: ', this.probability_to_colour);
 		this.initBlocks();
 		this.setup_random_start();
 		ca.UIEventController.bind('switchBlocks', this.switchBlocks, this);
@@ -163,16 +160,14 @@ ca.BlockManager = Backbone.Model.extend({
 
 		if (b2){
 			blocks[pos1[0]][pos1[1]] = b2;
-			b2.arr_x = pos1[0];
-			b2.arr_y = pos1[1];
+			b2.setPos(pos1);
 		}
 		else {
 			blocks[pos1[0]][pos1[1]] = this.makePlaceHolder();
 		}
 		if (b1) {
 			blocks[pos2[0]][pos2[1]] = b1;
-			b1.arr_x = pos2[0];
-			b1.arr_y = pos2[1];
+			b1.setPos(pos2);
 		}
 		else {
 			blocks[pos2[0]][pos2[1]] = this.makePlaceHolder();
@@ -199,11 +194,10 @@ ca.BlockManager = Backbone.Model.extend({
 			do {
 				currRow--;
 				currBlock = this.getBlock([pos[0], currRow]);
-				console.log("Check Block:", pos[0], currRow, currBlock);
 			} while (currBlock.isBlank());
 		}
 		catch (e) {
-			console.log("DropBlock Error", e, pos, currRow, currBlock);
+			console.error("DropBlock Error", e, pos, currRow, currBlock);
 			return false;
 		}
 			
@@ -213,11 +207,9 @@ ca.BlockManager = Backbone.Model.extend({
 			return false;
 		}
 		
-		// TODO move the block to the new position
 		col.splice(pos[1], 1);
 		col.splice(endRow, 0, block);
 		
-		// TODO trigger the animation
 		endPos = [pos[0], endRow];
 		this.trigger('dropBlock', {start: pos, end: endPos, block: block});
 			
