@@ -17,7 +17,17 @@ window.ca = {
 	/*** Constants   ***/
 
 	// Possible states the Blocks can be in
-	BLOCK_STATES: ['NULL', 'SWITCHING', 'FALLING', 'RISING', 'ACTIVE', 'DEAD'],
+	BLOCK_STATES: new Enum([
+		'NULL', 
+		'ACTIVE', // Can be used. There is no animation active on this block.
+		'SWITCHING', // User is moving the block.
+		'FALLING', // Filling up the space below.
+		'RISING', // User can see it on the bottom row but cannot use it.
+		'ACTIVATING', // Turning into a block from garbage.
+		'REMOVING', // User has got it in a group
+		'REMOVED' // The Block can be cleaned up
+	]),
+	
 	
 	// Positions are percentages relative to the size of .ca_block_container
 	positions: {

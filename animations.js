@@ -1,10 +1,13 @@
 
+/*global ca */
+
 ca.Animations = {
 	
 	// ms to fall 1 row.
 	fallSpeed: 20,
 	// ms to move 1 col.
 	switchSpeed: 75,
+	removeSpeed: 500,
 	
 	onStep: function(now, fx){
 		// Need to check for new rows being added.
@@ -39,7 +42,6 @@ ca.Animations = {
 		onEnd = function(){
 			block.isAnimating = false;
 			$block.css('z-index', '');
-			console.log("Animation end: ", block.id);
 			callback(block);
 			ca.the_game.board.block_manager.trigger('animationEnd', endPos);
 		};
@@ -57,14 +59,11 @@ ca.Animations = {
 			complete: onEnd,
 			step: ca.Animations.onStep
 		};
-		console.log("Animate: ", block.id, css, options);
 		
 		$block.animate(css, options);
 	},
 	
 	dropBlock: function(block, startPos, endPos, callback){
-		console.log("Start drop animation: ", arguments);
-		
 		var css = {bottom: ca.positions.rows[endPos[1]] + '%'};
 		var $blockElmt = block.$domobj;
 		var duration = (ca.positions.rows[startPos[1]] - parseInt(css.bottom, 10)) * ca.Animations.fallSpeed;
@@ -80,13 +79,37 @@ ca.Animations = {
 				step: ca.Animations.onStep
 			};
 			
-		console.log("Trigger animation", $blockElmt, css, options);	
 		block.isAnimating = true;
 		$blockElmt.animate(css, options);
 	},
 	
 	dropGarbage: function($garbageElmt, targetPos, callback){
 		
+	},
+	
+	removeBlock: function(block, pos, callback) {
+		var css = {
+			width: 0, 
+			height: 0, 
+			marginBottom: (ca.the_game.board.block_height/2)+'px',
+			marginLeft: (ca.the_game.board.block_width/2)+'px'
+		};
+		
+		var onEnd = function(){
+			block.isAnimating = false;
+			callback(block);
+			block.trigger('animationEnd', pos);
+		};
+		
+		var options = {
+			duration: this.removeSpeed,
+			easing: "",
+			complete: onEnd,
+			step: ca.Animations.onStep
+		}
+		
+		block.isAnimating = true;
+		block.$domobj.animate(css, options);
 	},
 	
 	raiseBoard: function(delta, callback){

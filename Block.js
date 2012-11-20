@@ -6,6 +6,7 @@ ca.Block = Backbone.Model.extend({
 	state: null,
 	// If the block is in the middle of an animation, we can't change the state
 	isAnimating: false,
+	pos: null,
 
 	/**
 	 * Accepted parameters:
@@ -13,6 +14,7 @@ ca.Block = Backbone.Model.extend({
 	 * special - boolean (default false)
 	 * col - column index
 	 * row - row index
+	 * pos - array [col, row]
 	 */
 	init: function(args){
 		if (typeof(args) === 'object') {

@@ -53,6 +53,7 @@ ca.Board = Backbone.View.extend({
 		this.block_manager.bind('switchBlocks', this.switchBlocks, this);
 		this.block_manager.bind('dropBlock', this.dropBlock, this);
 		this.block_manager.bind('removeBlocks', this.removeBlocks, this);
+		this.block_manager.bind('blockDeleted', this.updatePositions, this);
 		
 	},
 
@@ -92,7 +93,7 @@ ca.Board = Backbone.View.extend({
 		this.has_resized = true;
 	},
 
-	/* Returns the block bottom, left pixel values based on the given array co-ords (0-indexed) and bottom_offset */
+	/* Returns the block bottom, left pixel values based on the given array co-ords and bottom_offset */
 	getBlockPos: function(x, y, bottom_offset){
 		var pos = {
 			bottom : y * this.block_height + bottom_offset,
@@ -157,6 +158,17 @@ ca.Board = Backbone.View.extend({
 			
 		}
 	},
+	
+	updatePositions: function(positions){
+		var self = this;
+		
+		_.each(positions, function(pos){
+			var block = this.block_manager.getBlock(pos);
+			var dom = block.draw(pos[0], pos[1]);
+			this.appendBlock(dom);
+			this.block_manager.trigger('animationEnd', pos);
+		}, self);
+	},
 
 	/**
 	 * Swaps the block positions.
@@ -167,7 +179,6 @@ ca.Board = Backbone.View.extend({
 		
 		var pos1 = eventData[0],
 			pos2 = eventData[1];	
-		
 		
 		var b1 = this.block_manager.getBlock(pos1);
 		var b2 = this.block_manager.getBlock(pos2);
@@ -226,11 +237,32 @@ ca.Board = Backbone.View.extend({
 		
 	},
 	
+	/**
+	 * Remove a group of blocks
+	 */
 	removeBlocks: function(blockGroup){
-		_.each(blockGroup, function(){
+		var completed = 0;
+		
+		var groupCallback = function(){
+			
+		}
+		
+		var singleCallback = function(block){
+			console.log('Block Removed: ', block);
+			var pos = block.getPos();
+			block.$domobj.remove();
+			completed++;
+			
+			if (completed === blockGroup.length) {
+				groupCallback();
+			}
+		}
+		
+		_.each(blockGroup, function(block){
 			// TODO  trigger the individual animation on the old block
 			// refresh with the new blank blocks
-			
+			var pos = block.getPos();
+			ca.Animations.removeBlock(block, pos, singleCallback);
 		});
 	}
 

@@ -101,6 +101,50 @@ ca.BlockManager = Backbone.Model.extend({
 		return this.blocks[pos[0]][pos[1]];
 	},
 	
+	getBlockById: function(id){
+		var iter = this.getIter();
+		var block;
+		
+		while (iter.hasNext()) {
+			block = iter.next();
+			if (block.id == id) {
+				return block;
+			}
+		}
+
+		return;
+	},
+	
+    /**
+     * Make sure the block has the correct position set before using it.
+     * @param {Block} block - The block to check and update
+     * @return {Block} reference to the given block
+     * */
+	updateBlockPosition: function(block) {
+		var testBlock, testPos = block.getPos();
+		
+		if (testPos !== null) {
+			testBlock = this.getBlock(testPos);
+			if (testBlock.id === block.id) {
+				return block;
+			}
+		}
+		
+		
+		var iter = this.getIter();
+		while (iter.hasNext()) {
+			testBlock = iter.next();
+			if (block.id == testBlock.id) {
+				block.setPos(iter.currentPos());
+				return block;
+			}
+		}
+        
+        var error = new Error("BlockManager.updateBlockPosition Error: Block not found");
+        error.block = block;
+        throw error;
+	},
+	
 	/**
 	 * Return a block only if the position is in the visible area.
 	 * 
@@ -144,6 +188,39 @@ ca.BlockManager = Backbone.Model.extend({
 		var the_block = new ca.Block();
 		the_block.init({colour : 'blank'});
 		return the_block;
+	},
+	
+	/**
+	 * Remove the block at the given position.
+	 * Returns the block that just been removed, just in case you need it again.
+	 * */
+	deleteBlock: function(blocks) {
+		if (!_.isArray(blocks)) {
+			blocks = [blocks];
+		}
+		
+		var i, l, old, pos;
+		for (i=0, l=blocks.length; i<l; i++) {
+            pos = this.updateBlockPosition(blocks[i]).getPos();
+			old = this.blocks[pos[0]][pos[1]];
+			this.blocks[pos[0]][pos[1]] = this.makePlaceHolder();
+		}
+		this.trigger('blockDeleted', this.getPositions(blocks));
+		return blocks;
+	},
+	
+	getPositions: function(blocks){
+		var positions = [];
+		
+		if (!_.isArray(blocks)) {
+			blocks = [blocks];
+		}
+		
+		_.each(blocks, function(block){
+			positions.push(block.getPos())
+		})
+		
+		return positions;
 	},
 
 	/**
@@ -218,13 +295,15 @@ ca.BlockManager = Backbone.Model.extend({
 
 	/* The block has just been moved.
 	 * See what state it is in now and call the related functons/events
+	 * TODO Events caused by previous blocks being removed need to be chained to calculate score multipliyers
 	 * @param {Array[2]} endPos The final position of the block. */
 	checkBlockState: function(endPos){
+		console.log("checkBlockState: \n", this.toString());
 		var block = this.getBlock(endPos);
 		// Used if endPos block is blank
 		var i, blockAbove; 
 		// Used if endPos block is not blank
-		var blockBelow, theGroup; 
+		var blockBelow, theGroup;
 		
 		if (block.isBlank()) {
 			//blocks above?
@@ -237,6 +316,10 @@ ca.BlockManager = Backbone.Model.extend({
 				blockAbove = this.getBlock(endPos[0], endPos[1]+i);
 			}
 		}
+		else if (block.state === ca.BLOCK_STATES['REMOVING'] && !block.isAnimating) {
+			this.deleteBlock(block);
+			
+		}
 		else {
 			//falling
 			blockBelow = this.getBlock(endPos[0], endPos[1] -1);
@@ -248,6 +331,9 @@ ca.BlockManager = Backbone.Model.extend({
 			else {
 				theGroup = this.checkForGroups(endPos);
 				console.log('BlockState group: ', theGroup);
+				if (theGroup.length > 0) {
+					this.removeBlockGroup(theGroup);
+				}
 			}
 			
 		}
@@ -259,7 +345,7 @@ ca.BlockManager = Backbone.Model.extend({
 	checkForGroups: function(startPos){
 		var rowGroup = this.groupInRow(startPos);
 		var colGroup = this.groupInCol(startPos);
-		console.log('Final group: ', rowGroup, colGroup);
+		//console.log('Final group: ', rowGroup, colGroup);
 		
 		// Don't know why, but calling concat on an array reference instead of an object generated here does not work.
 		// e.g. rowGroup.concat(colGroup)
@@ -355,17 +441,32 @@ ca.BlockManager = Backbone.Model.extend({
 	/**
 	 * remove the given group of blocks
 	 */
-	removeblockGroup: function(theGroup) {
+	removeBlockGroup: function(theGroup) {
+		var self = this,
+			groupSize = theGroup.length,
+			removed = 0;
+		
+		var onAllRemoved = function(){
+			removed++;
+			console.log('removed ' + removed + ' of ' + groupSize);
+			if (removed === groupSize) {
+				console.log('Removed all of the group');
+				self.deleteBlock(theGroup);
+				console.log(self.toString());
+			}
+		}
 		
 		_.each(theGroup, function(theBlock){
-			var pos = theBlock.pos;
-			this.blocks[pos[0]][pos[1]] = this.makePlaceHolder();
-			theBlock.state = 'deleteing';
-		});
+			console.log('Remove Block: ', theBlock.id);
+			theBlock.state = ca.BLOCK_STATES['REMOVING'];
+			theBlock.bind('animationEnd', onAllRemoved);
+		}, self);
 		
 		this.trigger('removeBlocks', theGroup);
     
 	},
+	
+	
 
 	/**
 	 * Called when the next row becomes playable
@@ -382,7 +483,10 @@ ca.BlockManager = Backbone.Model.extend({
 		var str = "";
 		_.each(this.blocks, function(i){
 			_.each(i, function(j){
-				str += (j && !j.isBlank() ? j.id : '_') + ', ';
+				if (!j) str += '*';
+				else if (j.isBlank()) str += '_';
+				else if (typeof j.id === 'number') str += j.id;
+				str += ', ';
 			});
 			str += '\n';
 		});
