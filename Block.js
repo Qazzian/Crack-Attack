@@ -1,6 +1,6 @@
 ca.Block = Backbone.Model.extend({
 	id : 0,
-	colour: '', /* can be 'grey', 'orange', '	yellow', 'green', 'blue', 'purple', 'black', 'white' */
+	colour: '', /* can be 'grey', 'orange', 'yellow', 'green', 'blue', 'purple', 'black', 'white' */
 	special: false, /* for extream play */
 	$domobj: null,
 	state: null,

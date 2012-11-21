@@ -1,5 +1,5 @@
-.block, .block.grey {
-	background-color: grey;
+.block {
+	background-color: #333300;
 	border: 1px solid black;
 	height: 3.4%;
 	margin: 1px;
@@ -9,12 +9,15 @@
 	font-weight: bold;
 	text-shadow: -1px -1px 4px white;
 }
+.grey { background-color:grey;}
 .red { background-color:red;}
 .orange { background-color: #f80;}
 .yellow { background-color:yellow;}
 .green { background-color:#0a0;}
 .blue { background-color:blue;}
 .purple { background-color:#c0a;}
+.black { background-color:black;}
+.white { background-color:white;}
 .blank { background-color: transparent; }
 #ca_control_block { /*visibility: hidden; */ bottom:574px;}
 #ca_control_block2 { /*visibility: hidden; */ bottom:120px; left: 42px;}

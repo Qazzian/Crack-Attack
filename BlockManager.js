@@ -175,11 +175,14 @@ ca.BlockManager = Backbone.Model.extend({
 	},
 
 	makeRandomBlock: function(){
-		var random_num = Math.randomInt(this.probability_to_colour.length);
+		var random_num = Math.randomInt(this.probability_to_colour.length -1);
 		var the_colour = this.probability_to_colour[random_num];
 
 		var the_block = new ca.Block();
 		the_block.init({colour : the_colour});
+		if (the_colour === undefined) {
+			console.warn("Created an undefined colour: ", the_colour, random_num, the_block);
+		}
 		return the_block;
 	},
 	
