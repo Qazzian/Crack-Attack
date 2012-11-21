@@ -112,6 +112,19 @@ ca.BlockManager = Backbone.Model.extend({
 		return;
 	},
 	
+	getBlocksById: function(list){
+		if (!_.isArray(list)) {
+			throw new Error("getBlocksById: must supply an array of ID's");
+		}
+		
+		var blocks = [];
+		_.each(list, function(id){
+			blocks.push(this.getBlockById(id));
+		}, this);
+		
+		return blocks;
+	},
+	
     /**
      * Make sure the block has the correct position set before using it.
      * @param {Block} block - The block to check and update
@@ -120,7 +133,7 @@ ca.BlockManager = Backbone.Model.extend({
 	updateBlockPosition: function(block) {
 		var testBlock, testPos = block.getPos();
 		
-		if (testPos !== null) {
+		if (_.isArray(testPos)) {
 			testBlock = this.getBlock(testPos);
 			if (testBlock.id === block.id) {
 				return block;
@@ -201,8 +214,7 @@ ca.BlockManager = Backbone.Model.extend({
 		
 		var i, l, old, pos;
 		for (i=0, l=blocks.length; i<l; i++) {
-            pos = this.updateBlockPosition(blocks[i]).getPos();
-			old = this.blocks[pos[0]][pos[1]];
+			pos = this.updateBlockPosition(blocks[i]).getPos();
 			this.blocks[pos[0]][pos[1]] = this.makePlaceHolder();
 		}
 		this.trigger('blockDeleted', this.getPositions(blocks));
@@ -299,12 +311,12 @@ ca.BlockManager = Backbone.Model.extend({
 	 * TODO Events caused by previous blocks being removed need to be chained to calculate score multipliyers
 	 * @param {Array[2]} endPos The final position of the block. */
 	checkBlockState: function(endPos){
-		console.log("checkBlockState: \n", this.toString());
 		var block = this.getBlock(endPos);
 		// Used if endPos block is blank
 		var i, blockAbove; 
 		// Used if endPos block is not blank
 		var blockBelow, theGroup;
+		console.log("checkBlockState: \n", this.toString(), block);
 		
 		if (block.isBlank()) {
 			//blocks above?
