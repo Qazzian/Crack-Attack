@@ -3,7 +3,7 @@ ca.Block = Backbone.Model.extend({
 	colour: '', /* can be 'grey', 'orange', 'yellow', 'green', 'blue', 'purple', 'black', 'white' */
 	special: false, /* for extream play */
 	$domobj: null,
-	state: null,
+	state: 0,
 	// If the block is in the middle of an animation, we can't change the state
 	isAnimating: false,
 	pos: null,
@@ -25,7 +25,7 @@ ca.Block = Backbone.Model.extend({
 			}
 		}
 		this.id = ca.next_block_id++;
-		this.state = 'new';
+		this.setState('NEW');
 	},
 
 	/* bottom_offset - number of pixels to add to the bottom row
@@ -46,8 +46,8 @@ ca.Block = Backbone.Model.extend({
 	},
 	
 	setState: function(state){
-		if (ca.BLOCK_STATES.indexOf(state) !== -1) {
-			this.state = state;
+		if (typeof ca.BLOCK_STATES[state] === 'number') {
+			this.state = ca.BLOCK_STATES[state];
 			this.trigger('change', {'state': state});
 		}
 	},
@@ -81,7 +81,7 @@ ca.Block = Backbone.Model.extend({
 	
 	// Check the state of the block to see if the user can interact with it.
 	canUse: function(){
-		return (!this.isAnimating && this.state === 'ACTIVE');
+		return (!this.isAnimating && this.state === ca.BLOCK_STATES['ACTIVE']);
 	},
 	// Return true if this is a placeholder block
 	isBlank: function(){

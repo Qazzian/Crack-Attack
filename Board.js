@@ -153,6 +153,7 @@ ca.Board = Backbone.View.extend({
 
 				if (newElmt) {
 					this.appendBlock(newElmt);
+					block.setState('ACTIVE');
 				}
 			}
 			

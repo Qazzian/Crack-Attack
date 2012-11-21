@@ -1,8 +1,5 @@
 /*global ca, Backbone, _ */
 
-// Possible states for the block.
-ca.BLOCK_STATES = ['NULL', 'SWITCHING', 'FALLING', 'RISING', 'ACTIVE', 'DEAD'];
-
 /* This is the logic of the board and the placment of the blocks */
 ca.BlockManager = Backbone.Model.extend({
 	blocks : [],
@@ -287,6 +284,7 @@ ca.BlockManager = Backbone.Model.extend({
 			return false;
 		}
 		
+		block.setState('FALLING');
 		col.splice(pos[1], 1);
 		col.splice(endRow, 0, block);
 		
@@ -319,26 +317,34 @@ ca.BlockManager = Backbone.Model.extend({
 				blockAbove = this.getBlock(endPos[0], endPos[1]+i);
 			}
 		}
-		else if (block.state === ca.BLOCK_STATES['REMOVING'] && !block.isAnimating) {
-			this.deleteBlock(block);
-			
-		}
 		else {
-			//falling
-			blockBelow = this.getBlock(endPos[0], endPos[1] -1);
-			console.log("Check block below: ", endPos, blockBelow);
-			if (blockBelow && blockBelow.isBlank()) {
-				this.dropBlock(endPos);
-			}
-			//makes a group
-			else {
-				theGroup = this.checkForGroups(endPos);
-				console.log('BlockState group: ', theGroup);
-				if (theGroup.length > 0) {
-					this.removeBlockGroup(theGroup);
+			// First clear the a state that caused an animation that is now finished
+			if (!block.isAnimating) {
+				if ([ca.BLOCK_STATES['SWITCHING'], ca.BLOCK_STATES['FALLING'], ca.BLOCK_STATES['ACTIVATING']].indexOf(block.state) > -1) {
+					block.setState('ACTIVE');
+				}
+				else if (block.state === ca.BLOCK_STATES['REMOVING']) {
+					this.deleteBlock(block);
 				}
 			}
 			
+			// Now check the position of the block in relation to is surroundings
+			if (block.state === ca.BLOCK_STATES['ACTIVE']){
+				//falling
+				blockBelow = this.getBlock(endPos[0], endPos[1] -1);
+				console.log("Check block below: ", endPos, blockBelow);
+				if (blockBelow && blockBelow.isBlank()) {
+					this.dropBlock(endPos);
+				}
+				//makes a group
+				else {
+					theGroup = this.checkForGroups(endPos);
+					console.log('BlockState group: ', theGroup);
+					if (theGroup.length > 0) {
+						this.removeBlockGroup(theGroup);
+					}
+				}
+			}
 		}
 	},
 
