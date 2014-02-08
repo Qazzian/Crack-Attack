@@ -10,7 +10,7 @@ ca.Cursor = Backbone.Model.extend({
 			right: [1, 0],
 			none: [0,0]
 		},
-		
+
 	cursor_limits : {
 		min_x: 0,
 		max_x: 4,
@@ -32,20 +32,22 @@ ca.Cursor = Backbone.Model.extend({
 	},
 
 	codemap : {
-		'32':'switch','97':'left','100':'right','105':'up','106':'left','107':'down','108':'right','112':'pause','115':'down','119':'up'
+		'32':'switch','97':'left','100':'right','105':'up','106':'left','107':'down','108':'right','112':'pause','115':'down','119':'up',
+		'37':'left', '38':'up', '39': 'right', '40': 'down'
 	},
 
 	init: function() {
 		var self = this;
-		$('body').bind('keypress', function(event){self.onKeyPress(event);});
+		$(document).on('keydown', function(event){self.onKeyPress(event);});
 		this.cursor_location = [2, 3];
 		this.draw();
 	},
 
 	onKeyPress: function(event) {
 		var self = window.ca.the_game.cursor;
-		var keycode = event.which;
+		var keycode = event.keyCode;
 		var keyStr = String.fromCharCode(keycode);
+		console.log("KeyPress: ", keycode, keyStr);
 		switch (self.codemap[keycode]) {
 			case 'up':
 			case 'down':
