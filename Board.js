@@ -224,7 +224,7 @@ ca.Board = Backbone.View.extend({
 		
 		for (i = data.start[1]; i >= data.end[1]; i--) {
 			blankBlock = this.block_manager.getBlock(data.start[0], i);
-			if (blankBlock.isBlank()) {
+			if (blankBlock.isBlank() && blankBlock.$domobj) {
 				rowClass = blankBlock.$domobj.getClassLike(/row_/);
 				rowNum = parseInt(rowClass.replace('row_', ''), 10);
 				newRow = rowNum + 1;
