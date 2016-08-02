@@ -53,19 +53,21 @@ ca.Cursor = Backbone.Model.extend({
 			case 'down':
 			case 'left':
 			case 'right':
+				event.preventDefault();
 				self.moveCursor(self.codemap[keycode]);
 				break;
 			case 'switch':
+				event.preventDefault();
 				self.switchBlocks();
 				break;
 			case 'pause':
+				event.preventDefault();
 				self.pauseGame();
 				break;
 			default:
 				// ignore unrecognised key presses. Also let them fire default event
 				return;
 		}
-		event.preventDefault();
 		return false;
 	},
 
