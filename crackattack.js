@@ -5,6 +5,7 @@ window.ca = {
 	init : function () {
 		ca.the_game = new ca.Game();
 		ca.the_game.init();
+		ca.initButtons(ca.the_game);
 	},
 	Game : function(){},
 	BlockManager : function(){},
@@ -39,6 +40,14 @@ window.ca = {
 		cols: [
 			0, 16.66, 33.33, 50, 66.66, 83.33
 		]
+	},
+
+	initButtons: function(game) {
+		$(window).one('resize', function(){ game.queueEvent('resize'); });
+		$('.ca_stop_button').one('click', function(){ game.event_queue.unshift('stop'); });
+		$('.ca_start_button').one('click', function(){ game.start(); });
+		$('.ca_init_button').one('click', function(){ game.init(); });
+		$('.ca_reset_button').one('click', function(){ game.cleanUp(); });
 	}
 
 };
@@ -65,18 +74,9 @@ ca.Game.prototype = {
 		// List of debug elements
 		this.debug = {$fps : $('#ca_fps')};
 
-		this.init_events();
 		this.cursor = new ca.Cursor();
 		this.cursor.init();
 		//this.start();
-	},
-
-	init_events : function(){
-		var thisgame = this;
-		$(window).one('resize', function(){ thisgame.queueEvent('resize'); });
-		$('.ca_stop_button').one('click', function(){ thisgame.event_queue.unshift('stop'); });
-		$('.ca_start_button').one('click', function(){ thisgame.start(); });
-		$('.ca_init_button').one('click', function(){ thisgame.init(); });
 	},
 	// At some point this will need to save the event object.
 	queueEvent : function(event_name, event_obj) {
