@@ -1,13 +1,70 @@
 <html>
 <head>
-	<title>Crack Attack - intro</title>
+
+<title>Crack Attack</title>
+
+<link type="text/css" rel="stylesheet" href="crackattack.css" />
+
 </head>
-
 <body>
-<h1>Crack Attack</h1>
-<p>CrackAttack is A simple tetris/bejewled like game that is freely available on linux.
-This is the start of a port of that game to javascript to bring it to a wider audiance.</p>
 
-<p><a href="game.html">Play now</a></p>
+	<div class="ca_opposition_height_indicator">
+	</div>
+
+	<div class="ca_left_nav">
+		<div class="ca_logo"><h1>Crack Attack</h1></div>
+		<div class="ca_player_name"></div>
+		<div class="ca_death_bar"></div>
+		<div class="ca_player_score"></div>
+		<div class="ca_time"></div>
+
+
+		<p>CrackAttack is A simple tetris/bejewled like game that is freely available
+			on linux. This is the start of a port of that game to javascript to bring
+			it to a wider audiance.
+		</p>
+
+	</div>
+
+	<div class="ca_board">
+		<div class="ca_block_container">
+			<div id="ca_curser" class="col_2 row_3"></div>
+		</div>
+	</div>
+
+	<div class="ca_player_height_indicator">
+	</div>
+
+
+	<div class="ca_debug">
+	<ul style="list-style:none;">
+		<li><input class="ca_init_button" type="button" onclick="ca.the_game.init" value="Init" /></li>
+		<li><input class="ca_tick_button" type="button" onclick="ca.the_game.tick" value="Tick" /></li>
+		<li><input class="ca_start_button" type="button" onclick="ca.the_game.start" value="Start" /></li>
+		<li><input class="ca_stop_button" type="button" onclick="ca.the_game.stop" value="Stop The Game!" /></li>
+		<li><input class="ca_reset_button" type="button" onclick="ca.the_game.reset" value="Reset the board" /></li>
+		<li>FPS: <span id="ca_fps" /></li>
+		</ul>
+	</div>
+	<div style="clear:both"></div>
+
+
+<script type="text/JavaScript" src="lib/jquery.js"></script>
+<script type="text/JavaScript" src="lib/underscore-1.2.1.js"></script>
+<script type="text/JavaScript" src="lib/backbone.js"></script>
+<script type="text/JavaScript" src="lib/ecma_extended.js"></script>
+<script type="text/JavaScript" src="crackattack.js"></script>
+<script type="text/JavaScript" src="EventController.js"></script>
+<script type="text/JavaScript" src="BlockManager.js"></script>
+<script type="text/JavaScript" src="Block.js"></script>
+<script type="text/JavaScript" src="Board.js"></script>
+<script type="text/JavaScript" src="Cursor.js"></script>
+<script type="text/JavaScript" src="animations.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		window.ca.init();
+	});
+</script>
+
 </body>
-</html> 
+</html>
