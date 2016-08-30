@@ -121,6 +121,7 @@
 
 .ca_left_nav {
 	float: left;
+	max-width: 20%;
 }
 
 .ca_left_nav div{
