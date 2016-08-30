@@ -11,6 +11,7 @@ window.ca = {
 		ca.initButtons(ca.the_game);
 	},
 	Game : function(){},
+	Populators: {},
 	BlockManager : function(){},
 	Block : function(){},
 	next_block_id : 0,
