@@ -137,7 +137,6 @@ ca.Board = Backbone.View.extend({
 	add_garbage : function(){},
 	
 	draw : function(){
-		console.log("Drawing the board");
 		var curr_offset = this.bottom_offset;
 		var blockIter = this.block_manager.iter();
 		//console.log("Block Iter: ", blockIter);
