@@ -5,8 +5,7 @@ ca.BlockManager = Backbone.Model.extend({
 	blocks : [],
 	
 	colour_probabilities: {grey: 1, orange:5, yellow:5, green:5, blue:5, purple:5},
-	total_colour_probablity: 0,
-	total_probability: null,
+	total_probability: 0,
 	probability_to_colour: [],
 		
 	columns : 6, //blocks
@@ -50,6 +49,8 @@ ca.BlockManager = Backbone.Model.extend({
 		}
 	},
 
+	// TODO extract this into a board populator module
+	// That way we can inject test populators into this module
 	setup_random_start : function(){
 		// Set up 3 hidden rows and one complete visible row
 		var start_full_rows = this.undergroundRows + 1;
@@ -184,6 +185,7 @@ ca.BlockManager = Backbone.Model.extend({
 		}
 	},
 
+	// TODO Extract into another module
 	makeRandomBlock: function(){
 		var random_num = Math.randomInt(this.probability_to_colour.length -1);
 		var the_colour = this.probability_to_colour[random_num];

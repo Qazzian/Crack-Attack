@@ -3,6 +3,9 @@
 /* create a crackattack namespace */
 window.ca = {
 	init : function () {
+		if (ca.the_game) {
+			ca.clearGame();
+		}
 		ca.the_game = new ca.Game();
 		ca.the_game.init();
 		ca.initButtons(ca.the_game);
@@ -48,6 +51,11 @@ window.ca = {
 		$('.ca_start_button').one('click', function(){ game.start(); });
 		$('.ca_init_button').one('click', function(){ game.init(); });
 		$('.ca_reset_button').one('click', function(){ game.cleanUp(); });
+	},
+
+	clearGame: function(){
+		ca.the_game.stop();
+		ca.the_game.cleanUp();
 	}
 
 };
@@ -145,7 +153,7 @@ ca.Game.prototype = {
 	},
 
 	cleanUp: function(){
-
+		this.board.cleanUp();
 	}
 };
 

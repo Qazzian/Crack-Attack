@@ -265,6 +265,11 @@ ca.Board = Backbone.View.extend({
 			var pos = block.getPos();
 			ca.Animations.removeBlock(block, pos, singleCallback);
 		});
+	},
+
+	cleanUp: function(){
+		this.boardtag.find('.block').remove();
+		this.block_manager = null;
 	}
 
 
