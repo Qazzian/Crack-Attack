@@ -2,9 +2,10 @@
   "name": "crack-attack",
   "version": "0.1.0",
   "description": "A HTML/JavaScript rebuild of CrackAttack",
-  "main": "index.html",
+  "main": "js/crackattack.js",
   "scripts": {
-    "test": "./test.js"
+    "test": "./test.js",
+    "prepublish": "/build.js"
   },
   "repository": {
     "type": "git",
@@ -19,9 +20,21 @@
   "bugs": {
     "url": "https://github.com/Qazzian/Crack-Attack/issues"
   },
+  "system": {
+    "npmIgnore": [
+      "devDependencies"
+    ]
+  },
   "homepage": "https://github.com/Qazzian/Crack-Attack#readme",
   "devDependencies": {
     "babel-cli": "^6.14.0",
-    "node-qunit-phantomjs": "^1.4.0"
+    "node-qunit-phantomjs": "^1.4.0",
+    "steal": "^0.16.35",
+    "steal-tools": "^0.16.8"
+  },
+  "dependencies": {
+    "backbone": "^1.3.3",
+    "jquery": "^3.1.0",
+    "underscore": "^1.8.3"
   }
 }
