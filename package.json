@@ -5,7 +5,8 @@
   "main": "js/crackattack.js",
   "scripts": {
     "test": "./test.js",
-    "prepublish": "/build.js"
+    "prepublish": "/build.js",
+    "start": "http-server -p8091 -c-1 -s &"
   },
   "repository": {
     "type": "git",
