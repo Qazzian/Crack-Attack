@@ -15,11 +15,12 @@ window.ca = {
 	},
 	Game : function(){},
 	Populators: {},
-	BlockManager : function(){},
-	Block : function(){},
+	BlockManager : System.import('js/BlockManager'),
+	Block : System.import('js/Block'),
 	next_block_id : 0,
-	Garbage : function(){},
-	Cursor : null,
+	Garbage : System.import('js/Garbage'),
+	Cursor : System.import('js/Cursor'),
+	Cursor : System.import('js/Position'),
 	Animations: null,
 	
 	/*** Constants   ***/
@@ -160,5 +161,3 @@ ca.Game.prototype = {
 		this.board.cleanUp();
 	}
 };
-
-
