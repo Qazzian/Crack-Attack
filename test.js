@@ -2,4 +2,4 @@
 
 var qunit = require('node-qunit-phantomjs');
 
-qunit('./t/index.html');
+qunit('./t/index.html'); 
