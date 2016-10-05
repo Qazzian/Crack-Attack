@@ -4,14 +4,12 @@ and open the template in the editor.
 -->
 <!DOCTYPE html>
 <html>
-  <head>
-    <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<head>
+	<title></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-	<link rel="stylesheet" href="qunit.css" type="text/css" />
-	<link type="text/css" rel="stylesheet" href="../crackattack.css" />
-
-	<script src="../node_modules/steal/steal.js" main="t/t"></script>
+	<link rel="stylesheet" href="/node_modules/qunitjs/qunit/qunit.css" type="text/css"/>
+	<link type="text/css" rel="stylesheet" href="../crackattack.css"/>
 	<!--<script type="text/JavaScript" src="../lib/jquery.js"></script>-->
 	<!--<script type="text/JavaScript" src="../lib/underscore.js"></script>-->
 	<!--<script type="text/JavaScript" src="../lib/backbone.js"></script>-->
@@ -38,37 +36,35 @@ and open the template in the editor.
 			width: 65%;
 			float: left;
 		}
+
 		#CRACKATTACK_ELEMENTS {
 			width: 30%;
 			float: left;
 			margin-left: 10px;
 			height: 360px;
-			position:relative;
+			position: relative;
 		}
+
 		#TESTFOOT {
 			clear: both;
 		}
 	</style>
 
-  </head>
-  <body>
-		<div id="QUNIT_RESULTS">
-			<h1 id="qunit-header">Snowite API Testing</h1>
-			<h2 id="qunit-banner"></h2>
-			<div id="qunit-testrunner-toolbar"></div>
-			<h2 id="qunit-userAgent"></h2>
-			<ol id="qunit-tests"></ol>
-			<div id="qunit-fixture">
+</head>
+<body>
+	<div id="qunit"></div>
+	<div id="qunit-fixture"></div>
+	<div id="CRACKATTACK_ELEMENTS">
+		<div class="ca_board">
+			<div class="ca_block_container">
+				<div id="ca_curser" class="col_2 row_3"></div>
+			</div>
+		</div>
+	</div>
+	<div id="TESTFOOT"></div>
 
-			</div>
-		</div>
-		<div id="CRACKATTACK_ELEMENTS">
-			<div class="ca_board">
-				<div class="ca_block_container">
-					<div id="ca_curser" class="col_2 row_3"></div>
-				</div>
-			</div>
-		</div>
-		<div id="TESTFOOT"></div>
-  </body>
+	<script src="/node_modules/steal/steal.js" main="t/t"></script>
+	<!--<script type="text/javascript" src="/node_modules/qunitjs/qunit/qunit.js"></script>-->
+	<!--<script type="text/javascript" src="/t/t.js"></script>-->
+</body>
 </html>

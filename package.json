@@ -27,8 +27,9 @@
     "babel-cli": "^6.14.0",
     "node-qunit-phantomjs": "^1.4.0",
     "qunit": "^0.9.1",
-    "qunitjs": "1.10.0",
+    "qunitjs": "^2.0.1",
     "steal": "^0.16.35",
+    "steal-qunit": "^0.1.4",
     "steal-tools": "^0.16.8"
   },
   "dependencies": {
