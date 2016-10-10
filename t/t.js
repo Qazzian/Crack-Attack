@@ -12,4 +12,17 @@ function runSanityCheck(QUnit) {
 
 runSanityCheck(QUnit);
 
-// steal.import('t/t_BlockManager');
+import TestObj from 't/t_steal';
+
+
+function testImports(testObj) {
+    "use strict";
+
+    QUnit.test ('steal.import', function (assert) {
+        assert.ok(TestObj, 'imported object ok');
+        var testInst = new TestObj();
+        assert.equal(testInst.isDefined, true, 'Can create instances of the test object');
+    })
+};
+
+testImports();
