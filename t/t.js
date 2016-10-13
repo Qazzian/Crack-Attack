@@ -29,3 +29,5 @@ testImports();
 
 import 't/tools/t_shuffle';
 import 't/tools/t_Enum';
+import 't/tools/t_randomInt';
+// System.import('t/t_BlockManager');
