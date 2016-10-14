@@ -36,6 +36,7 @@ There are also 12 rows hidden to the user above the board. This is so that garba
 
 ## Css rules for block heights
 
+```css
 .block.row_0 { bottom: 0%; }
 .block.row_1 { bottom: 3.7%; }
 .block.row_2 { bottom: 7.4%; }
@@ -64,8 +65,14 @@ There are also 12 rows hidden to the user above the board. This is so that garba
 .block.row_25 { bottom: 92.5%; }
 .block.row_26 { bottom: 96.2%; }
 .block.row_27 { bottom: 99.9%; }
-
+```
 
 ## Js to generate the css rules
 
-    var str = '';for (var i=0,j=3.7; i*j<101; i++){str += '.block.row_'+i+' { bottom: '+ (i*j) + '%; }\n';} console.log(str);
+```javascript
+    var str = '';
+    for (var i=0,j=3.7; i*j<101; i++){
+        str += '.block.row_' + i + ' { bottom: ' +  (i*j) + '%; }\n';
+    }
+    console.log(str);
+```
