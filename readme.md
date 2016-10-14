@@ -4,9 +4,10 @@ Recreating the popular Linux game Crack-Attack for the internet generation
 
 # Build command
 
+```bash
 $ npm install
 $ ./node_modules/.bin/babel ./js -s -d ./build
-
+```
 # TODO
 
 * Add require.js or similar
