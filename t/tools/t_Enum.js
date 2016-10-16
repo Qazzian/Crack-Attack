@@ -1,7 +1,3 @@
-/**
- * Created by ian-wallis on 13/10/2016.
- */
-
 'use strict';
 
 import QUnit from 'steal-qunit';

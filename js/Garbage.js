@@ -8,7 +8,7 @@ define(function(require) {
 	Garbage.prototype = {
 		id : 0,
 		image : 0,
-		special : 0,
+		isSpecial : 0,
 		width : 0,
 		height : 0,
 		x : 0,
