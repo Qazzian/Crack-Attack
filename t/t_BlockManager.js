@@ -1,51 +1,57 @@
+import QUnit from 'steal-qunit';
 
-function TestBoard(){
-	this.run();
+import {default as BlockManager} from 'js/BlockManager';
+
+
+function TestBoard() {
+	this.run(QUnit);
 }
 
 TestBoard.prototype = {
 
-	run: function(){
+	run: function (QUnit) {
 		var self = this;
-		module('Crack Attack Block Manager');
+		QUnit.module('Crack Attack Block Manager');
 		for (var func in this) {
 			if (func.match(/^test/)) {
-				test(func, this, self[func]);
+				QUnit.test(func, self[func]);
 			}
 		}
 	},
-	
-	testNew: function(){
-		var m1 = new ca.BlockManager();
-		ok(m1);
-		ok(m1.init());
-	},
-	
 
-	testIter: function() {
-		var bm = new ca.BlockManager();
+	testNew: function (assert) {
+		assert.ok(BlockManager, 'BlockManager defined');
+		assert.equal(typeof BlockManager, 'function', 'BlockManager is a constructor');
+		var m1 = new BlockManager();
+		assert.ok(m1, 'Can create an instance');
+		assert.ok(m1.init(), 'Can initialise instance');
+	},
+
+
+	testIter: function (assert) {
+		var bm = new BlockManager();
 		bm.init();
 
 		var iter = bm.getIter();
 		console.log(iter);
-		ok(iter, "Block Manager can create an iter object")
-		ok(iter.length, 'Iter must report its length');
-		
+		assert.ok(iter, "Block Manager can create an iter object")
+		assert.ok(iter.length, 'Iter must report its length');
+
 		var posCount = 0;
-		ok(iter.hasNext(), 'Must have a hasNext at the beginning');
+		assert.ok(iter.hasNext(), 'Must have a hasNext at the beginning');
 		while (iter.hasNext()) {
 			iter.next();
 			posCount++;
 		}
-		equal(posCount, iter.length, 'Calls to next must match length of iter');
-		
+		assert.equal(posCount, iter.length, 'Calls to next must match length of iter');
+
 		// Test that it works with blocks in the board
 		bm.setup_random_start();
 		var iter2 = bm.getIter();
-		
+
 
 	}
-	
-}
+
+};
 
 window.TestBoardSuit = new TestBoard();
