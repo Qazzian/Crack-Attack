@@ -1,24 +1,15 @@
 /*
- * ca.Board
+ * Board
  * 
  * This is the visual representation of the Board.
  * It needs to deal with painting the blocks and animations.
  */
 
-/*global Backbone: false, ca: false, _: false */
+import Backbone from 'backbone';
 
-ca.Board = Backbone.View.extend({
-	// Quick hack to change some of the properties.
-//	if (typeof opts === 'object') for (var o in opts) {
-//		if (this.hasOwnProperty(o) && typeof this[o] !== 'function') {
-//			this[o] = opts[o];
-//		}
-//	}
-//	
-//	this.total_rows = this.undergroundRows + this.visible_rows + this.overgroundRows;
-//};
+import {default as BlockManager} from 'js/BlockManager';
 
-//ca.Board.prototype = {
+var Board = Backbone.View.extend({
 	tagName: 'div',
 	el: '.ca_board',
 	boardtag : null,
@@ -40,7 +31,7 @@ ca.Board = Backbone.View.extend({
 	init : function (){
 		this.boardtag = $(this.el);
 		this.container_tag = this.$('.ca_block_container');
-		this.block_manager = new ca.BlockManager();
+		this.block_manager = new BlockManager();
 		this.block_manager.init();
 		this.resetAspectRatio();
 		var self = this;
@@ -273,3 +264,5 @@ ca.Board = Backbone.View.extend({
 
 
 });
+
+export default Board;
