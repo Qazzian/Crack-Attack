@@ -20,7 +20,7 @@ window.ca = {
 	next_block_id : 0,
 	Garbage : System.import('js/Garbage'),
 	Cursor : System.import('js/Cursor'),
-	Cursor : System.import('js/Position'),
+	Position : System.import('js/Position'),
 	Animations: null,
 	
 	/*** Constants   ***/

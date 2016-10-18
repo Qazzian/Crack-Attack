@@ -33,3 +33,4 @@ import 't/tools/t_randomInt';
 
 System.import('t/t_Block');
 // System.import('t/t_BlockManager');
+System.import('t/t_Position');
