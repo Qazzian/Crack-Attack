@@ -1,3 +1,12 @@
+body {
+
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
 .block {
 	background-color: #333300;
 	border: 1px solid black;
@@ -135,6 +144,10 @@
 .ca_debug {
 	float: left;
 	height: 100%;
+}
+
+.ca_debug ul {
+	padding-left: 1em;
 }
 
 
