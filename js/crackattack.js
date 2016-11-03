@@ -1,7 +1,13 @@
 
 import $ from "jquery";
-import _ from "underscore";
-import Backbone from "backbone";
+
+import Board from 'js/Board';
+import BlockManager from 'js/BlockManager';
+import Block from 'js/Block';
+import Garbage from 'js/Garbage';
+import Cursor from 'js/Cursor';
+import Position from 'js/Position';
+import Animations from 'js/animations';
 
 /* create a crackattack namespace */
 window.ca = {
@@ -12,20 +18,29 @@ window.ca = {
 		ca.the_game = new ca.Game();
 		ca.the_game.init();
 		ca.initButtons(ca.the_game);
+		ca.Animations.setup({
+			positions: ca.positions,
+			blockManager: ca.the_game.board.block_manager,
+			blockHeight: ca.the_game.board.block_height,
+			blockWidth: ca.the_game.board.block_width
+		});
 	},
+
 	Game : function(){},
 	Populators: {},
-	BlockManager : System.import('js/BlockManager'),
-	Block : System.import('js/Block'),
+	Board: Board,
+	BlockManager : BlockManager,
+	Block : Block,
 	next_block_id : 0,
-	Garbage : System.import('js/Garbage'),
-	Cursor : System.import('js/Cursor'),
-	Position : System.import('js/Position'),
-	Animations: null,
+	Garbage : Garbage,
+	Cursor : Cursor,
+	Position : Position,
+	Animations: Animations,
 	
 	/*** Constants   ***/
 
 	// Possible states the Blocks can be in
+	// TODO Moved to BlockManager temporarily 
 	// BLOCK_STATES: new Enum([
 	// 	'NULL',
 	// 	'ACTIVE', // Can be used. There is no animation active on this block.
@@ -159,5 +174,6 @@ ca.Game.prototype = {
 
 	cleanUp: function(){
 		this.board.cleanUp();
+		this.cursor.reset();
 	}
 };
