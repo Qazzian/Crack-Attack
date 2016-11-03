@@ -1,54 +1,91 @@
-/*global ca, Backbone */
+'use strict';
 
-ca.Cursor = Backbone.Model.extend({
+import Backbone from 'backbone';
+
+import UIEventController from 'js/EventController';
+
+/**
+ * TODO:
+ * separate input control from cursor movement.
+ * user Inputs should fire movement events which the cursor listens for and responds to.
+ */
+
+
+var Cursor = Backbone.Model.extend({
 	cursor_id: 'ca_curser',
 	cursor_location: null,
-	move_dirs : {
-			up: [0,1],
-			down: [0, -1],
-			left: [-1, 0],
-			right: [1, 0],
-			none: [0,0]
-		},
 
-	cursor_limits : {
+	move_dirs: {
+		up: [0, 1],
+		down: [0, -1],
+		left: [-1, 0],
+		right: [1, 0],
+		none: [0, 0]
+	},
+
+	// TODO should be set by the board
+	cursor_limits: {
 		min_x: 0,
 		max_x: 4,
 		min_y: 3,
 		max_y: 14
 	},
 
-	keymap : {
-		'i' : 'up',
-		'j' : 'left',
-		'k' : 'down',
-		'l' : 'right',
-		'w' : 'up',
-		'a' : 'left',
-		's' : 'down',
-		'd' : 'right',
-		' ' : 'switch',
-		'p' : 'pause'
+	// TODO move to the input controller
+	keymap: {
+		'i': 'up',
+		'j': 'left',
+		'k': 'down',
+		'l': 'right',
+		'w': 'up',
+		'a': 'left',
+		's': 'down',
+		'd': 'right',
+		' ': 'switch',
+		'p': 'pause'
 	},
 
-	codemap : {
-		'32':'switch','97':'left','100':'right','105':'up','106':'left','107':'down','108':'right','112':'pause','115':'down','119':'up',
-		'37':'left', '38':'up', '39': 'right', '40': 'down'
+	// TODO move to the input controller
+	codemap: {
+		'32': 'switch',
+		'97': 'left',
+		'100': 'right',
+		'105': 'up',
+		'106': 'left',
+		'107': 'down',
+		'108': 'right',
+		'112': 'pause',
+		'115': 'down',
+		'119': 'up',
+		'37': 'left',
+		'38': 'up',
+		'39': 'right',
+		'40': 'down'
 	},
 
-	init: function() {
+	init: function () {
 		var self = this;
-		$(document).on('keydown', function(event){self.onKeyPress(event);});
+		// TODO move to the input controller
+		$(document).on('keydown', function (event) {
+			self.onKeyPress(event);
+		});
+		// TODO Defined by the board
 		this.cursor_location = [2, 3];
 		this.draw();
 	},
 
-	onKeyPress: function(event) {
+	reset: function () {
+		$(document).off('keydown');
+	},
+
+	// TODO move to the input controller
+	onKeyPress: function (event) {
 		var self = window.ca.the_game.cursor;
 		var keycode = event.keyCode;
-		var keyStr = String.fromCharCode(keycode);
+		var keyStr = self.codemap[keycode];
 		console.log("KeyPress: ", keycode, keyStr);
-		switch (self.codemap[keycode]) {
+		switch (keyStr) {
+			// TODO these become event triggers
 			case 'up':
 			case 'down':
 			case 'left':
@@ -71,17 +108,17 @@ ca.Cursor = Backbone.Model.extend({
 		return false;
 	},
 
-	moveCursor: function(direction) {
+	// TODO this becomes the event listener for those triggered above
+	moveCursor: function (direction) {
 		var moveCoords = this.move_dirs[direction];
 
-		// TODO: contain the cursor
 		this.cursor_location[0] += moveCoords[0];
 		this.cursor_location[1] += moveCoords[1];
 		this.containCursor();
 		this.draw();
 	},
 
-	containCursor: function(){
+	containCursor: function () {
 		var coords = this.cursor_location;
 		coords[0] = Math.min(coords[0], this.cursor_limits.max_x);
 		coords[1] = Math.min(coords[1], this.cursor_limits.max_y);
@@ -90,17 +127,21 @@ ca.Cursor = Backbone.Model.extend({
 	},
 
 	/* Needs to know details about where the board offset is etc */
-	draw: function(){
+	draw: function () {
 		var elmt = document.getElementById(this.cursor_id);
-		elmt.className = "col_"+this.cursor_location[0] + ' row_'+this.cursor_location[1];
+		elmt.className = "col_" + this.cursor_location[0] + ' row_' + this.cursor_location[1];
 	},
 
-	switchBlocks: function(){
-		ca.UIEventController.fire('switchBlocks', [this.cursor_location, [this.cursor_location[0]+1, this.cursor_location[1]]]);
+	switchBlocks: function () {
+		UIEventController.fire('switchBlocks', [this.cursor_location, [this.cursor_location[0] + 1, this.cursor_location[1]]]);
 	},
 
-	pauseGame: function(){
+	// TODO pauseGame input event
+	// TODO move to the input controller
+	pauseGame: function () {
 
 	}
 
 });
+
+export default Cursor;
