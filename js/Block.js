@@ -1,3 +1,5 @@
+'use strict';
+
 import Backbone from 'backbone';
 import BLOCK_STATES from 'js/BlockStates';
 
@@ -83,6 +85,11 @@ var Block = Backbone.Model.extend({
 
 	match: function (other) {
 		return this.colour === other.colour;
+	},
+
+	removeColClass: function() {
+		var colClass = this.$domobj[0].className.match(/col_([0-9]+)/);
+		this.$domobj.removeClass(colClass[0]);
 	},
 
 	// Check the state of the block to see if the user can interact with it.
