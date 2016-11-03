@@ -6,12 +6,9 @@ import shuffleArray from 'js/tools/shuffle';
 import Enum from 'js/tools/Enum';
 
 import Block from 'js/Block';
+import BLOCK_STATES from 'js/BlockStates';
 import Position from 'js/Position';
-
-
-
-
-// import UIEventController from 'js/EventController';
+import UIEventController from 'js/EventController';
 
 var BlockManager = Backbone.Model.extend({
 	blocks: [],
@@ -46,7 +43,7 @@ var BlockManager = Backbone.Model.extend({
 		this.probability_to_colour = shuffleArray(tArr);
 		this.initBlocks();
 		this.setup_random_start();
-		// UIEventController.bind('switchBlocks', this.switchBlocks, this);
+		UIEventController.bind('switchBlocks', this.switchBlocks, this);
 		this.bind('animationEnd', this.checkBlockState, this);
 
 		return true;
