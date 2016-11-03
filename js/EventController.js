@@ -7,7 +7,7 @@
  * Events need to be listed in registeredEvents in order to trigger.
  */
 
-ca.UIEventController = new (Backbone.Model.extend({
+var UIEventController = new (Backbone.Model.extend({
 	
 	registeredEvents: [
 		'switchBlocks'  // Data: { leftPos: Array[2], rightPos: Array[2] }
@@ -22,3 +22,5 @@ ca.UIEventController = new (Backbone.Model.extend({
 		}
 	}
 }))();
+
+export default UIEventController;
