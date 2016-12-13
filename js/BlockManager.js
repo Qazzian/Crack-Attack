@@ -49,6 +49,11 @@ var BlockManager = Backbone.Model.extend({
 		return true;
 	},
 
+	destroy: function() {
+		UIEventController.unbind('switchBlocks');
+		Backbone.Model.prototype.unbind.call(this);
+	},
+
 	initBlocks: function () {
 		var x;
 		this.blocks = [];

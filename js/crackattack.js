@@ -69,7 +69,6 @@ window.ca = {
 		$(window).one('resize', function(){ game.queueEvent('resize'); });
 		$('.ca_stop_button').one('click', function(){ game.event_queue.unshift('stop'); });
 		$('.ca_start_button').one('click', function(){ game.start(); });
-		$('.ca_init_button').one('click', function(){ game.init(); });
 		$('.ca_reset_button').one('click', function(){ game.cleanUp(); });
 	},
 

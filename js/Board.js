@@ -262,7 +262,8 @@ var Board = Backbone.View.extend({
 
 	cleanUp: function () {
 		this.boardtag.find('.block').remove();
-		this.block_manager = null;
+		this.block_manager.destroy();
+		delete this.block_manager;
 	}
 
 
