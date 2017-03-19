@@ -1,5 +1,7 @@
 # Crack Attack js
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Qazzian/Crack-Attack.svg)](https://greenkeeper.io/)
+
 Recreating the popular Linux game Crack-Attack for the internet generation
 
 # Build command
