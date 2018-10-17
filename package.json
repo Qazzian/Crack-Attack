@@ -5,7 +5,7 @@
   "main": "js/crackattack.js",
   "scripts": {
     "test": "./test.js",
-    "prepublish": "/build.js",
+    "prepublish": "./node_modules/.bin/steal-tools",
     "start": "http-server -p8091 -c-1 -s &"
   },
   "repository": {
@@ -25,6 +25,8 @@
   "homepage": "https://github.com/Qazzian/Crack-Attack#readme",
   "devDependencies": {
     "babel-cli": "^6.14.0",
+    "grunt": "^1.0.1",
+    "grunt-blanket-qunit": "Qazzian/grunt-blanket-qunit",
     "node-qunit-phantomjs": "^1.4.0",
     "qunit": "^0.9.1",
     "qunitjs": "^2.0.1",
