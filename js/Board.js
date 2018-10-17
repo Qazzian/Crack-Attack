@@ -11,6 +11,9 @@ import getClassLike from 'js/tools/jquery-getClassLike';
 import {default as BlockManager} from 'js/BlockManager';
 import Animations from 'js/animations';
 
+/**
+ * The board view
+ */
 var Board = Backbone.View.extend({
 	tagName: 'div',
 	el: '.ca_board',
@@ -191,8 +194,6 @@ var Board = Backbone.View.extend({
 				b2.$domobj.addClass('col_' + pos2[0]);
 				b2.$domobj.removeAttr('style');
 			});
-
-
 		}
 	},
 

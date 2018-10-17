@@ -10,6 +10,9 @@ import BLOCK_STATES from 'js/BlockStates';
 import Position from 'js/Position';
 import UIEventController from 'js/EventController';
 
+/**
+ * BlockManager - The Current state of the game board
+ */
 var BlockManager = Backbone.Model.extend({
 	blocks: [],
 
@@ -62,8 +65,8 @@ var BlockManager = Backbone.Model.extend({
 		}
 	},
 
-	// TODO extract this into a board populator module
-	// That way we can inject test populators into this module
+	// TODO extract this into a board populater module
+	// That way we can inject test populaters into this module
 	setup_random_start: function () {
 		// Set up 3 hidden rows and one complete visible row
 		var start_full_rows = this.undergroundRows + 1;
